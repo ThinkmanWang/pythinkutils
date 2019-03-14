@@ -11,7 +11,7 @@ import logging.handlers
 import os
 import time
 import re
-from thinkutils.common_utils.FileUtils import *
+from pythinkutils.common.FileUtils import *
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
     def __init__(self, filename, when='h', interval=1, backupCount=0, encoding=None, delay=False, utc=False, postfix = ".log"):
