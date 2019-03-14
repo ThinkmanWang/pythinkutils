@@ -7,6 +7,10 @@ name = "pypi"
 redis = "*"
 pymysql = "*"
 dbutils = "*"
+rainbow = "*"
+rainbow-logging-handler = "*"
+coloredlogs = "*"
+logutils = "*"
 
 [dev-packages]
 
