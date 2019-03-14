@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.douban.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+redis = "*"
+pymysql = "*"
+dbutils = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
