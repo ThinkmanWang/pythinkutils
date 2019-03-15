@@ -11,6 +11,9 @@ rainbow = "*"
 rainbow-logging-handler = "*"
 coloredlogs = "*"
 logutils = "*"
+aiomysql = "*"
+aiorwlock = "*"
+aioredis = "*"
 
 [dev-packages]
 

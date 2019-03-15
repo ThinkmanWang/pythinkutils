@@ -16,15 +16,18 @@ def create_table_group():
         
         CREATE TABLE t_thinkauth_group (
             `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
+            , `owner` bigint(0) UNSIGNED NOT NULL DEFAULT 10000001
             , `name` varchar(256) NOT NULL 
             , PRIMARY KEY (`id`)
+            , `date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP 
+            , `description` varchar(256) 
         );
             
         alter table t_thinkauth_group AUTO_INCREMENT=10000001;
         ALTER TABLE `db_thinkutils`.`t_thinkauth_group` ADD INDEX `IX_group_name`(`name`) USING BTREE;
         
-        insert into t_thinkauth_group(name) VALUES ('admin');
-        insert into t_thinkauth_group(name) VALUES ('guest');
+        insert into t_thinkauth_group(name, owner) VALUES ('admin', 10000001);
+        insert into t_thinkauth_group(name, owner) VALUES ('guest', 10000001);
         '''
 
         for statement in szSql.split(';'):
