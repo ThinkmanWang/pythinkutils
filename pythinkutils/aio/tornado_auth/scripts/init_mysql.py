@@ -163,11 +163,78 @@ def create_table_permission():
     finally:
         conn.close()
 
+
+def create_table_user_permission():
+    conn = ThinkMysql.get_conn_pool().connection()
+    try:
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        szSql = '''
+                    DROP TABLE IF EXISTS t_thinkauth_user_permission;
+
+                    CREATE TABLE t_thinkauth_user_permission (
+                        `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
+                        , `user_id` bigint(0) UNSIGNED NOT NULL 
+                        , `permission_id` bigint(0) UNSIGNED NOT NULL  
+
+                        , PRIMARY KEY (`id`)
+                    );
+
+                    ALTER TABLE `t_thinkauth_user_permission` ADD INDEX `IX_user_permission_uid`(`user_id`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_user_permission` ADD INDEX `IX_user_permission_pid`(`permission_id`) USING BTREE;
+
+                    insert INTO t_thinkauth_user_permission(user_id, permission_id) VALUES (10000001, 1), (10000001, 2);
+                    '''
+
+        for statement in szSql.split(';'):
+            if len(statement.strip()) > 0:
+                cur.execute(statement + ';')
+
+        conn.commit()
+
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+
+def create_table_group_permission():
+    conn = ThinkMysql.get_conn_pool().connection()
+    try:
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        szSql = '''
+                    DROP TABLE IF EXISTS t_thinkauth_group_permission;
+
+                    CREATE TABLE t_thinkauth_group_permission (
+                        `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
+                        , `group_id` bigint(0) UNSIGNED NOT NULL 
+                        , `permission_id` bigint(0) UNSIGNED NOT NULL  
+
+                        , PRIMARY KEY (`id`)
+                    );
+
+                    ALTER TABLE `t_thinkauth_group_permission` ADD INDEX `IX_group_permission_uid`(`group_id`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_group_permission` ADD INDEX `IX_group_permission_pid`(`permission_id`) USING BTREE;
+
+                    insert INTO t_thinkauth_group_permission(group_id, permission_id) VALUES (10000001, 1), (10000001, 2);
+                    '''
+
+        for statement in szSql.split(';'):
+            if len(statement.strip()) > 0:
+                cur.execute(statement + ';')
+
+        conn.commit()
+
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+
 def main():
     create_table_group()
     create_table_user()
     create_table_user_group()
     create_table_permission()
+    create_table_user_permission()
+    create_table_group_permission()
 
 if __name__ == '__main__':
     main()
