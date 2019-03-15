@@ -13,11 +13,26 @@ async def test_query_user_by_name():
     print(dictRet)
     print(obj2json(dictRet))
 
+async def test_query_user_id_name():
+    dictRet = await SimpleUserService.get_user_id("root")
+    print(dictRet)
+
+async def test_user_token():
+    ret = await SimpleUserService.check_token("root", "00000000000000000000000000000000")
+    print(ret)
+    ret = await SimpleUserService.check_token("root", "00000000000000000000000000000001")
+    print(ret)
+
+async def test():
+    await test_query_user_by_name()
+    await test_query_user_id_name()
+    await test_user_token()
+
 def main():
     # await test_query_user_by_name()
     loop = asyncio.get_event_loop()
 
-    asyncio.gather(test_query_user_by_name())
+    asyncio.gather(test())
 
     loop.run_forever()
 

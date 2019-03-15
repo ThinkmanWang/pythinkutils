@@ -8,6 +8,7 @@ import aiomysql
 
 from pythinkutils.aio.mysql.ThinkAioMysql import ThinkAioMysql
 from pythinkutils.common.log import g_logger
+from pythinkutils.common.datetime_utils import *
 
 class BaseUserService(object):
 
@@ -43,7 +44,33 @@ class BaseUserService(object):
 
     @classmethod
     async def get_user_id(cls, szUserName):
-        pass
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
+                        await cur.execute("SELECT "
+                                          "  id "
+                                          "FROM "
+                                          "  t_thinkauth_user "
+                                          "WHERE "
+                                          "  username = %s "
+                                          "LIMIT 1 ", (szUserName,))
+
+                        rows = await cur.fetchall()
+                        if len(rows) <= 0:
+                            return -1
+
+                        return rows[0]["id"]
+                except Exception as e:
+                    g_logger.error(e)
+                    return -1
+                finally:
+                    conn.close()
+
+        except Exception as e:
+            g_logger.error(e)
+            return -1
 
     @classmethod
     @abc.abstractmethod
@@ -62,4 +89,36 @@ class BaseUserService(object):
 
     @classmethod
     async def check_token(cls, szUserName, szToken):
-        pass
+        nUID = await cls.get_user_id(szUserName)
+        if nUID <= 0:
+            return False
+
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
+                        await cur.execute("SELECT "
+                                          "  1 "
+                                          "FROM "
+                                          "  t_thinkauth_user_token "
+                                          "WHERE "
+                                          "  user_id = %s "
+                                          "  AND token = %s "
+                                          "  AND date_expire >= %s"
+                                          "LIMIT 1 ", (nUID, szToken, get_current_time_str()))
+
+                        rows = await cur.fetchall()
+                        if len(rows) <= 0:
+                            return False
+
+                        return True
+                except Exception as e:
+                    g_logger.error(e)
+                    return False
+                finally:
+                    conn.close()
+
+        except Exception as e:
+            g_logger.error(e)
+            return False
