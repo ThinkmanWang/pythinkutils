@@ -228,6 +228,39 @@ def create_table_group_permission():
     finally:
         conn.close()
 
+def create_table_token():
+    conn = ThinkMysql.get_conn_pool().connection()
+    try:
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        szSql = '''
+                    DROP TABLE IF EXISTS t_thinkauth_user_token;
+
+                    CREATE TABLE t_thinkauth_user_token (
+                        `user_id` bigint(0) UNSIGNED NOT NULL 
+                        , `token` varchar(256) NOT NULL  
+                        , `date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP 
+                        , `date_expire` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP 
+                    );
+
+                    ALTER TABLE `t_thinkauth_user_token` ADD INDEX `IX_user_token_uid`(`user_id`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_user_token` ADD INDEX `IX_user_token_token`(`token`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_user_token` ADD INDEX `IX_user_token_date_add`(`date_added`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_user_token` ADD INDEX `IX_user_token_date_expire`(`date_expire`) USING BTREE;
+
+                    insert INTO t_thinkauth_user_token(user_id, token, date_expire) VALUES (10000001, '00000000000000000000000000000000', '2030-12-31 23:59:59');
+                    '''
+
+        for statement in szSql.split(';'):
+            if len(statement.strip()) > 0:
+                cur.execute(statement + ';')
+
+        conn.commit()
+
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+
 def main():
     create_table_group()
     create_table_user()
@@ -235,6 +268,7 @@ def main():
     create_table_permission()
     create_table_user_permission()
     create_table_group_permission()
+    create_table_token()
 
 if __name__ == '__main__':
     main()
