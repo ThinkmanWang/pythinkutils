@@ -104,6 +104,36 @@ class BaseUserService(object):
             return None
 
     @classmethod
+    async def get_user_by_id(cls, nUID):
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
+                        await cur.execute("SELECT "
+                                          "  * "
+                                          "FROM "
+                                          "  t_thinkauth_user "
+                                          "WHERE "
+                                          "  id = %s "
+                                          "LIMIT 1 ", (nUID, ))
+
+                        rows = await cur.fetchall()
+                        if len(rows) <= 0:
+                            return None
+
+                        return rows[0]
+                except Exception as e:
+                    g_logger.error(e)
+                    return None
+                finally:
+                    conn.close()
+
+        except Exception as e:
+            g_logger.error(e)
+            return None
+
+    @classmethod
     @abc.abstractmethod
     async def create_user(cls, szUserName, szPwd, nSuperUser = 0, nActive = 1):
         pass
