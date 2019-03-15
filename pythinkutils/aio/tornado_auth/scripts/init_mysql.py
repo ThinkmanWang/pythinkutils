@@ -57,13 +57,100 @@ def create_table_user():
 
                 alter table t_thinkauth_user AUTO_INCREMENT=10000001;
                 ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_name`(`username`) USING BTREE;
-
+                ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_active`(`is_active`) USING BTREE;
+                ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_date_added`(`date_added`) USING BTREE;
 
                 INSERT INTO t_thinkauth_user(username, password, is_superuser) VALUES ('root', 'Ab123145', 1);
                 INSERT INTO t_thinkauth_user(username, password) VALUES ('thinkman', 'Ab123145');
-
           
                 '''
+
+        for statement in szSql.split(';'):
+            if len(statement.strip()) > 0:
+                cur.execute(statement + ';')
+
+        conn.commit()
+
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+
+def create_table_user_group():
+    conn = ThinkMysql.get_conn_pool().connection()
+    try:
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        szSql = '''
+                    DROP TABLE IF EXISTS t_thinkauth_user_group;
+
+                    CREATE TABLE t_thinkauth_user_group (
+                        `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
+                        , `user_id` bigint(0) UNSIGNED NOT NULL 
+                        , `group_id` bigint(0) UNSIGNED NOT NULL  
+                        
+                        , PRIMARY KEY (`id`)
+                    );
+
+                    ALTER TABLE `t_thinkauth_user_group` ADD INDEX `IX_user_group_uid`(`user_id`) USING BTREE;
+                    ALTER TABLE `t_thinkauth_user_group` ADD INDEX `IX_user_group_gid`(`group_id`) USING BTREE;
+                    
+                    insert INTO t_thinkauth_user_group(user_id, group_id) VALUES (10000001, 10000001);
+                    '''
+
+        for statement in szSql.split(';'):
+            if len(statement.strip()) > 0:
+                cur.execute(statement + ';')
+
+        conn.commit()
+
+    except Exception as e:
+        pass
+    finally:
+        conn.close()
+
+def create_table_permission():
+    conn = ThinkMysql.get_conn_pool().connection()
+    try:
+        cur = conn.cursor(pymysql.cursors.DictCursor)
+        szSql = '''
+                        DROP TABLE IF EXISTS t_thinkauth_permission;
+
+                        CREATE TABLE t_thinkauth_permission (
+                            `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
+                            , `permission_name` varchar(256) NOT NULL 
+                            , `description` varchar(256) 
+
+                            , PRIMARY KEY (`id`)
+                        );
+
+                        ALTER TABLE `t_thinkauth_permission` ADD INDEX `IX_permission_name`(`permission_name`) USING BTREE;
+
+                        insert INTO t_thinkauth_permission(permission_name) VALUES 
+                            ('permission_add_logentry')
+                            , ('permission_change_logentry')
+                            , ('permission_delete_logentry')
+                            , ('permission_view_logentry')
+                            , ('permission_add_permission')
+                            , ('permission_change_permission')
+                            , ('permission_delete_permission')
+                            , ('permission_view_permission')
+                            , ('permission_add_group')
+                            , ('permission_change_group')
+                            , ('permission_delete_group')
+                            , ('permission_view_group')
+                            , ('permission_add_user')
+                            , ('permission_change_user')
+                            , ('permission_delete_user')
+                            , ('permission_view_user')
+                            , ('permission_add_contenttype')
+                            , ('permission_change_contenttype')
+                            , ('permission_delete_contenttype')
+                            , ('permission_view_contenttype')
+                            , ('permission_add_session')
+                            , ('permission_change_session')
+                            , ('permission_delete_session')
+                            , ('permission_view_session');
+                        '''
 
         for statement in szSql.split(';'):
             if len(statement.strip()) > 0:
@@ -79,6 +166,8 @@ def create_table_user():
 def main():
     create_table_group()
     create_table_user()
+    create_table_user_group()
+    create_table_permission()
 
 if __name__ == '__main__':
     main()
