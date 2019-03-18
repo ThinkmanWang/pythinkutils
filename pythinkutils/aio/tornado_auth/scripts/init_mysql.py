@@ -121,6 +121,7 @@ def create_table_permission():
                         CREATE TABLE t_thinkauth_permission (
                             `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
                             , `permission_name` varchar(256) NOT NULL 
+                            , `permission_type` INTEGER NOT NULL DEFAULT 0 
                             , `description` varchar(256) 
 
                             , PRIMARY KEY (`id`)
