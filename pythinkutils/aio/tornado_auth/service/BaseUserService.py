@@ -183,3 +183,34 @@ class BaseUserService(object):
         except Exception as e:
             g_logger.error(e)
             return False
+
+    @classmethod
+    async def get_user_groups(cls, szUser):
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
+                        await cur.execute("SELECT                                                    "
+                                          "	 c.*                                                     "
+                                          "FROM                                                      "
+                                          "	 t_thinkauth_user_group AS a                             "
+                                          "	 left join t_thinkauth_user as b on a.user_id = b.id     "
+                                          "	 left join t_thinkauth_group as c on a.group_id = c.id   "
+                                          "where                                                     "
+                                          "	 b.username = %s                                         ", (szUser, ))
+
+                        rows = await cur.fetchall()
+                        if len(rows) <= 0:
+                            return []
+
+                        return rows
+                except Exception as e:
+                    g_logger.error(e)
+                    return []
+                finally:
+                    conn.close()
+
+        except Exception as e:
+            g_logger.error(e)
+            return []
