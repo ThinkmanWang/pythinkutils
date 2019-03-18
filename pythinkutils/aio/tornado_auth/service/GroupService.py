@@ -13,6 +13,11 @@ class GroupService(object):
 
     @classmethod
     async def create_group(cls, szGroup, nOwner = 10000001, szDesc = ""):
+        dictGroup = await cls.get_group(szGroup, nOwner)
+        if dictGroup is not None:
+            if dictGroup["owner"] == nOwner:
+                return dictGroup
+
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -21,7 +26,7 @@ class GroupService(object):
                         await cur.execute("INSERT INTO "
                                           "  t_thinkauth_group(owner, `name`, description) "
                                           "VALUES "
-                                          "  (%s, %s, %s, %s)"
+                                          "  (%s, %s, %s)"
                                           , (nOwner, szGroup, szDesc))
 
                         await conn.commit()
@@ -38,7 +43,7 @@ class GroupService(object):
             return None
 
     @classmethod
-    async def get_group(cls, szGroup):
+    async def get_group(cls, szGroup, nOwner = 10000001):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -50,7 +55,8 @@ class GroupService(object):
                                           "  t_thinkauth_group "
                                           "WHERE "
                                           "  `name` = %s "
-                                          "LIMIT 1 ", (szGroup,))
+                                          "  AND owner = %s "
+                                          "LIMIT 1 ", (szGroup, nOwner))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -69,7 +75,7 @@ class GroupService(object):
             return -1
 
     @classmethod
-    async def get_group_id(cls, szGroup):
+    async def get_group_id(cls, szGroup, nOwner = 10000001):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -81,7 +87,8 @@ class GroupService(object):
                                           "  t_thinkauth_group "
                                           "WHERE "
                                           "  `name` = %s "
-                                          "LIMIT 1 ", (szGroup,))
+                                          "  AND owner = %s "
+                                          "LIMIT 1 ", (szGroup, nOwner))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -99,8 +106,8 @@ class GroupService(object):
             return -1
 
     @classmethod
-    async def change_group_name(cls, szGroup, szNewGroupName):
-        nID = await cls.get_group_id(szGroup)
+    async def change_group_name(cls, szGroup, szNewGroupName, nOwner = 10000001):
+        nID = await cls.get_group_id(szGroup, nOwner)
         if nID <= 0:
             return None
 
@@ -129,20 +136,21 @@ class GroupService(object):
             return None
 
     @classmethod
-    async def get_group_members(cls, szGroup):
+    async def get_group_members(cls, szGroup, nOwner = 10000001):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
                 try:
                     async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
-                        await cur.execute("SELECT                                                  "
-                                          "	c.*                                                    "
-                                          "FROM                                                    "
-                                          "	t_thinkauth_user_group as a                            "
-                                          "	left JOIN t_thinkauth_group as b on a.group_id = b.id  "
-                                          "	LEFT JOIN t_thinkauth_user as c on a.user_id = c.id    "
-                                          "WHERE                                                   "
-                                          "	b.`name` = %s                                          ", (szGroup, ))
+                        await cur.execute("SELECT                                                   "
+                                          "	 c.*                                                    "
+                                          "FROM                                                     "
+                                          "	 t_thinkauth_user_group as a                            "
+                                          "	 left JOIN t_thinkauth_group as b on a.group_id = b.id  "
+                                          "	 LEFT JOIN t_thinkauth_user as c on a.user_id = c.id    "
+                                          "WHERE                                                    "
+                                          "	 b.`name` = %s                                          "
+                                          "  AND owner = %s ", (szGroup, nOwner))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -160,9 +168,43 @@ class GroupService(object):
             return []
 
     @classmethod
-    async def add_user_to_group(cls, szUserName, szGroup):
-        pass
+    async def add_user_to_group(cls, szUserName, szGroup, nOwner = 10000001):
+        from pythinkutils.aio.tornado_auth.service.BaseUserService import BaseUserService
+        nUID = await BaseUserService.get_user_id(szUserName)
+        if nUID < 0:
+            return False
+
+        dictGroup = await cls.get_group(szGroup, nOwner)
+        if dictGroup is None:
+            return False
+
+        nGID = dictGroup["id"]
+        if nGID < 0:
+            return False
+
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor() as cur:
+                        await cur.execute("INSERT INTO "
+                                          "  t_thinkauth_user_group(user_id, group_id) "
+                                          "VALUES "
+                                          "  (%s, %s)"
+                                          , (nUID, nGID))
+
+                        await conn.commit()
+
+                        return True
+                except Exception as e:
+                    g_logger.error(e)
+                    return True
+                finally:
+                    conn.close()
+        except Exception as e:
+            g_logger.error(e)
+            return True
 
     @classmethod
-    async def delete_group(cls, szGroup):
+    async def delete_group(cls, szGroup, nOwner = 10000001):
         pass
