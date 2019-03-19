@@ -58,6 +58,9 @@ class PermissionService(object):
                                           "LIMIT 1 ", (szName, nOwner))
 
                         rows = await cur.fetchall()
+                        if rows is None or len(rows) <= 0:
+                            return None
+
                         return rows[0]
                 except Exception as e:
                     g_logger.error(e)
