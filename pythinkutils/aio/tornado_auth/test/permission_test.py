@@ -30,7 +30,6 @@ async def test():
     await group_has_permission()
 
 def main():
-    # await test_query_user_by_name()
     loop = asyncio.get_event_loop()
 
     asyncio.gather(test())
