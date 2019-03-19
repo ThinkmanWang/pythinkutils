@@ -96,8 +96,11 @@ application = tornado.web.Application(handlers = [
     , (r'/', MainHandler)
 ], autoreload=False)
 
+async def func1():
+    return "Server Started"
 async def on_server_started():
-    g_logger.info("Server Started")
+    szMsg = await func1()
+    g_logger.info(szMsg)
 
 if __name__ == '__main__':
 
@@ -107,11 +110,14 @@ if __name__ == '__main__':
 
     # ipDB = IPLocation.instance()
     g_logger.info('HTTP Server started... %d' % (os.getpid(),))
-
-    # tornado.platform.asyncio.AsyncIOMainLoop().install()
-    AsyncIOMainLoop().install()
-    ioloop = asyncio.get_event_loop()
-
     asyncio.gather(on_server_started())
 
-    ioloop.run_forever()
+    tornado.ioloop.IOLoop.current().start()
+
+    # tornado.platform.asyncio.AsyncIOMainLoop().install()
+    # AsyncIOMainLoop().install()
+    # ioloop = asyncio.get_event_loop()
+    #
+    # asyncio.gather(on_server_started())
+    #
+    # ioloop.run_forever()
