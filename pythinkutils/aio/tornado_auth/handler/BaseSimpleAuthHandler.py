@@ -9,7 +9,6 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 
-from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
 from pythinkutils.common.StringUtils import *
 
 class BaseSimpleAuthHandler(tornado.web.RequestHandler):
@@ -19,6 +18,8 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
         pass
 
     async def login(self, szUsername, szPwd):
+        from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
+
         nExpireDays = 180
 
         szToken = await SimpleUserService.login(szUsername, szPwd, nExpireDays)
@@ -34,14 +35,12 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
         self.clear_cookie("username")
         self.clear_cookie("token")
 
-    async def login_required(self):
-        def decorator(func):
-            def wrapper(*args, **kwargs):
-                if is_empty_string(self.get_cookie("username")) or is_empty_string(self.get_cookie("token")):
-                    self.on_goto_login_page()
-
-                return func(*args, **kwargs)
-
-            return wrapper
-
-        return decorator
+def login_required():
+    def auth_decorator(func):
+        async def inner(self, *args, **kwargs):
+            if is_empty_string(self.get_cookie("username")) or is_empty_string(self.get_cookie("token")):
+                await self.on_goto_login_page()
+            else:
+                await func(self, *args, **kwargs)
+        return inner
+    return auth_decorator

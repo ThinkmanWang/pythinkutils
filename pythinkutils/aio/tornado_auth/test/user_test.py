@@ -35,14 +35,14 @@ async def test_create_user():
     g_logger.info(ret)
 
 async def test_login():
-    ret = await SimpleUserService.login("user1", "12345678")
+    ret = await SimpleUserService.login("root", "Ab123145")
     g_logger.info(ret)
 
 async def test():
-    await test_query_user_by_name()
-    await test_query_user_id_name()
-    await test_user_token()
-    await test_create_user()
+    # await test_query_user_by_name()
+    # await test_query_user_id_name()
+    # await test_user_token()
+    # await test_create_user()
     await test_login()
 
 def main():
