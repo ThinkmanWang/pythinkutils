@@ -108,7 +108,8 @@ if __name__ == '__main__':
     # ipDB = IPLocation.instance()
     g_logger.info('HTTP Server started... %d' % (os.getpid(),))
 
-    tornado.platform.asyncio.AsyncIOMainLoop().install()
+    # tornado.platform.asyncio.AsyncIOMainLoop().install()
+    AsyncIOMainLoop().install()
     ioloop = asyncio.get_event_loop()
 
     asyncio.gather(on_server_started())
