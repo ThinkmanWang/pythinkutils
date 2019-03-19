@@ -12,8 +12,8 @@ from pythinkutils.common.datetime_utils import *
 class PermissionService(object):
 
     @classmethod
-    async def create_permission(cls, szName, szDescription = "", nOwner = 10000001):
-        dictPermission = await cls.select_permission(szName, nOwner)
+    async def create_permission(cls, szName, szDescription = ""):
+        dictPermission = await cls.select_permission(szName)
         if dictPermission is not None:
             return dictPermission
 
@@ -23,14 +23,14 @@ class PermissionService(object):
                 try:
                     async with conn.cursor() as cur:
                         await cur.execute("INSERT INTO "
-                                          "  t_thinkauth_permission(`permission_name`, owner, description) "
+                                          "  t_thinkauth_permission(`permission_name`, description) "
                                           "VALUES "
-                                          "  (%s, %s, %s)"
-                                          , (szName, nOwner, szDescription))
+                                          "  (%s, %s)"
+                                          , (szName, szDescription))
 
                         await conn.commit()
 
-                        dictRet = await cls.select_permission(szName, nOwner)
+                        dictRet = await cls.select_permission(szName)
                         return dictRet
                 except Exception as e:
                     g_logger.error(e)
@@ -42,7 +42,7 @@ class PermissionService(object):
             return None
 
     @classmethod
-    async def select_permission(cls, szName, nOwner = 10000001):
+    async def select_permission(cls, szName):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -54,8 +54,8 @@ class PermissionService(object):
                                           "  t_thinkauth_permission "
                                           "WHERE "
                                           "  `permission_name` = %s "
-                                          "  AND owner = %s "
-                                          "LIMIT 1 ", (szName, nOwner))
+                                          "   "
+                                          "LIMIT 1 ", (szName, ))
 
                         rows = await cur.fetchall()
                         if rows is None or len(rows) <= 0:
@@ -73,7 +73,7 @@ class PermissionService(object):
             return None
 
     @classmethod
-    async def user_has_permission(cls, szUser, szPermission, nOwner = 10000001):
+    async def user_has_permission(cls, szUser, szPermission):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -92,7 +92,7 @@ class PermissionService(object):
                                           "		WHERE                                                                     "
                                           "			b.username = %s                                                         "
                                           "			AND c.permission_name = %s                                              "
-                                          "			AND c.owner = %s                                                        "
+                                          "			                                                        "
                                           "			)                                                                       "
                                           "	OR EXISTS (                                                                 "
                                           "		SELECT                                                                    "
@@ -103,7 +103,7 @@ class PermissionService(object):
                                           "			LEFT JOIN t_thinkauth_permission AS c ON a.permission_id = c.id         "
                                           "		WHERE                                                                     "
                                           "			c.permission_name = %s                                                  "
-                                          "			AND c.owner = %s                                                        "
+                                          "			                                                        "
                                           "			AND b.id IN (                                                           "
                                           "				SELECT                                                                "
                                           "					d.group_id                                                          "
@@ -113,7 +113,7 @@ class PermissionService(object):
                                           "				WHERE                                                                 "
                                           "					e.username = %s                                                     "
                                           "			)                                                                       "
-                                          "	)                                                                           ", (szUser, szPermission, nOwner, szPermission, nOwner, szUser))
+                                          "	)                                                                           ", (szUser, szPermission, szPermission, szUser))
 
                         rows = await cur.fetchall()
                         if rows is None or len(rows) <= 0:
@@ -131,7 +131,7 @@ class PermissionService(object):
             return False
 
     @classmethod
-    async def group_has_permission(cls, nGroupID, szPermission, nOwner = 10000001):
+    async def group_has_permission(cls, nGroupID, szPermission):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -146,8 +146,7 @@ class PermissionService(object):
                                             "	LEFT JOIN t_thinkauth_permission AS c ON a.permission_id = c.id    "
                                             "WHERE                                                               "
                                             "	c.permission_name = %s                                             "
-                                            "	AND c.OWNER = %s                                                   "
-                                            "	AND b.id = %s                                                  ", (szPermission, nOwner, nGroupID))
+                                            "	AND b.id = %s                                                  ", (szPermission, nGroupID))
 
                         rows = await cur.fetchall()
                         if rows is None or len(rows) <= 0:
@@ -165,14 +164,14 @@ class PermissionService(object):
             return False
 
     @classmethod
-    async def grant_permission_to_user(cls, szPermission, szUser, nOwner = 10000001):
+    async def grant_permission_to_user(cls, szPermission, szUser):
         from pythinkutils.aio.tornado_auth.service.BaseUserService import BaseUserService
 
-        bHasPermission = await cls.user_has_permission(szUser, szPermission, nOwner)
+        bHasPermission = await cls.user_has_permission(szUser, szPermission)
         if bHasPermission:
             return True
 
-        dictPermission = await cls.select_permission(szPermission, nOwner)
+        dictPermission = await cls.select_permission(szPermission)
         if dictPermission is None:
             return False
 
@@ -204,21 +203,21 @@ class PermissionService(object):
             return False
 
     @classmethod
-    async def grant_permissions_to_user(cls, lstPermission, szUser, nOwner = 10000001):
+    async def grant_permissions_to_user(cls, lstPermission, szUser):
         for szPermission in lstPermission:
-            await cls.grant_permission_to_user(szPermission, szUser, nOwner)
+            await cls.grant_permission_to_user(szPermission, szUser)
 
         return True
 
     @classmethod
-    async def grant_permission_to_group(cls, szPermission, nGroupID, nOwner = 10000001):
+    async def grant_permission_to_group(cls, szPermission, nGroupID):
         from pythinkutils.aio.tornado_auth.service.GroupService import GroupService
 
-        bHasPermission = await cls.group_has_permission(nGroupID, szPermission, nOwner)
+        bHasPermission = await cls.group_has_permission(nGroupID, szPermission)
         if bHasPermission:
             return True
 
-        dictPermission = await cls.select_permission(szPermission, nOwner)
+        dictPermission = await cls.select_permission(szPermission)
         if dictPermission is None:
             return False
 
@@ -246,9 +245,9 @@ class PermissionService(object):
             return False
 
     @classmethod
-    async def grant_permissions_to_group(cls, lstPermission, nGroupID, nOwner = 10000001):
+    async def grant_permissions_to_group(cls, lstPermission, nGroupID):
         for szPermission in lstPermission:
-            await cls.grant_permission_to_user(szPermission, nGroupID, nOwner)
+            await cls.grant_permission_to_user(szPermission, nGroupID)
 
         return True
 

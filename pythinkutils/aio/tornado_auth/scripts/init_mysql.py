@@ -16,7 +16,6 @@ def create_table_group():
         
         CREATE TABLE t_thinkauth_group (
             `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
-            , `owner` bigint(0) UNSIGNED NOT NULL DEFAULT 10000001
             , `name` varchar(256) NOT NULL 
             , PRIMARY KEY (`id`)
             , `date_added` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP 
@@ -26,8 +25,8 @@ def create_table_group():
         alter table t_thinkauth_group AUTO_INCREMENT=10000001;
         ALTER TABLE `db_thinkutils`.`t_thinkauth_group` ADD INDEX `IX_group_name`(`name`) USING BTREE;
         
-        insert into t_thinkauth_group(name, owner) VALUES ('admin', 10000001);
-        insert into t_thinkauth_group(name, owner) VALUES ('guest', 10000001);
+        insert into t_thinkauth_group(name) VALUES ('admin');
+        insert into t_thinkauth_group(name) VALUES ('guest');
         '''
 
         for statement in szSql.split(';'):
@@ -121,7 +120,6 @@ def create_table_permission():
                         CREATE TABLE t_thinkauth_permission (
                             `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
                             , `permission_name` varchar(256) NOT NULL 
-                            , `owner` bigint(0) UNSIGNED NOT NULL DEFAULT 10000001
                             , `description` varchar(256) 
                             , PRIMARY KEY (`id`)
                         );

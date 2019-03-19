@@ -19,14 +19,14 @@ async def test_get_group():
 
 
 async def test_create_group():
-    dictRet = await GroupService.create_group("FXXK2", 10000004)
+    dictRet = await GroupService.create_group("FXXK2")
     if dictRet is None:
         g_logger.info("FXXK Failed")
         return
 
     g_logger.info(obj2json(dictRet))
 
-    ret = await GroupService.add_user_to_group("root", "FXXK2", 10000004)
+    ret = await GroupService.add_user_to_group("root", "FXXK2")
     g_logger.info(ret)
 
 

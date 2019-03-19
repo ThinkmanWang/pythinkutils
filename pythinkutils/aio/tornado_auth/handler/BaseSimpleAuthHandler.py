@@ -59,7 +59,7 @@ def api_login_required():
         return inner
     return auth_decorator
 
-def api_permission_required(szPermission, szOwner = "root"):
+def api_permission_required(szPermission):
     def auth_decorator(func):
         async def inner(self, *args, **kwargs):
             from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService
@@ -77,12 +77,7 @@ def api_permission_required(szPermission, szOwner = "root"):
                 await self.on_api_user_not_login()
                 return
 
-            nOwner = await SimpleUserService.get_user_id(szOwner)
-            if nOwner < 0:
-                await self.on_api_user_not_login()
-                return
-
-            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission, nOwner)
+            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission)
             if bHasPermission:
                 await func(self, *args, **kwargs)
             else:
@@ -107,7 +102,7 @@ def page_login_required():
         return inner
     return auth_decorator
 
-def page_permission_required(szPermission, szOwner = "root"):
+def page_permission_required(szPermission):
     def auth_decorator(func):
         async def inner(self, *args, **kwargs):
             from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService
@@ -125,12 +120,7 @@ def page_permission_required(szPermission, szOwner = "root"):
                 await self.on_goto_login_page()
                 return
 
-            nOwner = await SimpleUserService.get_user_id(szOwner)
-            if nOwner < 0:
-                await self.on_goto_login_page()
-                return
-
-            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission, nOwner)
+            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission)
             if bHasPermission:
                 await func(self, *args, **kwargs)
             else:

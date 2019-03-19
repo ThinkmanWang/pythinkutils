@@ -12,11 +12,10 @@ from pythinkutils.common.datetime_utils import *
 class GroupService(object):
 
     @classmethod
-    async def create_group(cls, szGroup, nOwner = 10000001, szDesc = ""):
-        dictGroup = await cls.get_group(szGroup, nOwner)
+    async def create_group(cls, szGroup, szDesc = ""):
+        dictGroup = await cls.get_group(szGroup)
         if dictGroup is not None:
-            if dictGroup["owner"] == nOwner:
-                return dictGroup
+            return dictGroup
 
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
@@ -24,10 +23,10 @@ class GroupService(object):
                 try:
                     async with conn.cursor() as cur:
                         await cur.execute("INSERT INTO "
-                                          "  t_thinkauth_group(owner, `name`, description) "
+                                          "  t_thinkauth_group(`name`, description) "
                                           "VALUES "
-                                          "  (%s, %s, %s)"
-                                          , (nOwner, szGroup, szDesc))
+                                          "  (%s, %s)"
+                                          , (szGroup, szDesc))
 
                         await conn.commit()
 
@@ -43,7 +42,7 @@ class GroupService(object):
             return None
 
     @classmethod
-    async def get_group(cls, szGroup, nOwner = 10000001):
+    async def get_group(cls, szGroup):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -55,8 +54,8 @@ class GroupService(object):
                                           "  t_thinkauth_group "
                                           "WHERE "
                                           "  `name` = %s "
-                                          "  AND owner = %s "
-                                          "LIMIT 1 ", (szGroup, nOwner))
+                                          "  "
+                                          "LIMIT 1 ", (szGroup, ))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -75,7 +74,7 @@ class GroupService(object):
             return None
 
     @classmethod
-    async def get_group_id(cls, szGroup, nOwner = 10000001):
+    async def get_group_id(cls, szGroup):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -87,8 +86,8 @@ class GroupService(object):
                                           "  t_thinkauth_group "
                                           "WHERE "
                                           "  `name` = %s "
-                                          "  AND owner = %s "
-                                          "LIMIT 1 ", (szGroup, nOwner))
+                                          "  "
+                                          "LIMIT 1 ", (szGroup, ))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -106,8 +105,8 @@ class GroupService(object):
             return -1
 
     @classmethod
-    async def change_group_name(cls, szGroup, szNewGroupName, nOwner = 10000001):
-        nID = await cls.get_group_id(szGroup, nOwner)
+    async def change_group_name(cls, szGroup, szNewGroupName):
+        nID = await cls.get_group_id(szGroup)
         if nID <= 0:
             return None
 
@@ -136,7 +135,7 @@ class GroupService(object):
             return None
 
     @classmethod
-    async def get_group_members(cls, szGroup, nOwner = 10000001):
+    async def get_group_members(cls, szGroup):
         try:
             conn_pool = await ThinkAioMysql.get_conn_pool()
             async with conn_pool.acquire() as conn:
@@ -150,7 +149,7 @@ class GroupService(object):
                                           "	 LEFT JOIN t_thinkauth_user as c on a.user_id = c.id    "
                                           "WHERE                                                    "
                                           "	 b.`name` = %s                                          "
-                                          "  AND owner = %s ", (szGroup, nOwner))
+                                          " ", (szGroup, ))
 
                         rows = await cur.fetchall()
                         if len(rows) <= 0:
@@ -168,13 +167,13 @@ class GroupService(object):
             return []
 
     @classmethod
-    async def add_user_to_group(cls, szUserName, szGroup, nOwner = 10000001):
+    async def add_user_to_group(cls, szUserName, szGroup):
         from pythinkutils.aio.tornado_auth.service.BaseUserService import BaseUserService
         nUID = await BaseUserService.get_user_id(szUserName)
         if nUID < 0:
             return False
 
-        dictGroup = await cls.get_group(szGroup, nOwner)
+        dictGroup = await cls.get_group(szGroup)
         if dictGroup is None:
             return False
 
@@ -206,5 +205,5 @@ class GroupService(object):
             return True
 
     @classmethod
-    async def delete_group(cls, szGroup, nOwner = 10000001):
+    async def delete_group(cls, szGroup):
         pass
