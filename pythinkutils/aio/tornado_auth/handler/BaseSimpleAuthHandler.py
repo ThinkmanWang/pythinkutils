@@ -51,7 +51,6 @@ def permission_required(szPermission, szOwner = "root"):
             from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService
             from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
 
-
             szUser = self.get_cookie("username")
             if is_empty_string(szUser):
                 await self.on_goto_login_page()
