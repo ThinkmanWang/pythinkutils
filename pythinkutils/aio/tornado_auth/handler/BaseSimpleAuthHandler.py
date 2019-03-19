@@ -55,7 +55,7 @@ def api_login_required():
                 if bTokenValid:
                     await func(self, *args, **kwargs)
                 else:
-                    await self.on_goto_login_page()
+                    await self.on_api_user_not_login()
         return inner
     return auth_decorator
 
@@ -114,13 +114,13 @@ def page_permission_required(szPermission, szOwner = "root"):
             from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
 
             szUser = self.get_cookie("username")
-            szToken = self.get_argument("token", "")
+            szToken = self.get_cookie("token", "")
 
             if is_empty_string(szUser) or is_empty_string(szToken):
                 await self.on_goto_login_page()
                 return
 
-            bTokenValid = await SimpleUserService.check_token(self.get_argument("username", ""), self.get_argument("token", ""))
+            bTokenValid = await SimpleUserService.check_token(self.get_cookie("username", ""), self.get_cookie("token", ""))
             if False == bTokenValid:
                 await self.on_goto_login_page()
                 return
