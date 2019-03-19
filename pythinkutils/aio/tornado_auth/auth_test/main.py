@@ -30,22 +30,19 @@ class LoginHandler(BaseSimpleAuthHandler):
         await self.get()
 
     async def post(self):
-        await self.get()
-
-    async def get(self):
         szUsername = self.get_argument("username", "")
         szPwd = self.get_argument("password", "")
         szRedirectUrl = self.get_argument("redirect_url", "")
 
         if is_empty_string(szUsername) or is_empty_string(szPwd):
             self.write('''
-            <form action="/login" method="GET">
-                <p>Username: <input type="text" name="username" /></p>
-                <p>Password: <input type="text" name="password" /></p>
-                <p>Password: <input type="text" name="redirect_url" value="{}" /></p>
-                <input type="submit" value="Submit" />
-            </form>
-            '''.format(szRedirectUrl))
+                    <form action="/login" method="POST">
+                        <p>Username: <input type="text" name="username" /></p>
+                        <p>Password: <input type="text" name="password" /></p>
+                        <p><input type="hidden" name="redirect_url" value="{}" /></p>
+                        <input type="submit" value="Submit" />
+                    </form>
+                    '''.format(szRedirectUrl))
         else:
             _szUsername, szToken = await self.login(szUsername, szPwd)
             if False == is_empty_string(szToken):
@@ -55,6 +52,9 @@ class LoginHandler(BaseSimpleAuthHandler):
                     self.redirect(szRedirectUrl)
             else:
                 self.redirect("/login")
+
+    async def get(self):
+        await self.post()
 
 class FxxkHandler(BaseSimpleAuthHandler):
 
