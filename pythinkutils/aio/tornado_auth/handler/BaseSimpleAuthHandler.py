@@ -10,12 +10,20 @@ import tornado.options
 import tornado.web
 
 from pythinkutils.common.StringUtils import *
+from pythinkutils.common.log import g_logger
 
 class BaseSimpleAuthHandler(tornado.web.RequestHandler):
 
-    @abc.abstractmethod
+    async def on_api_user_not_login(self):
+        self.write('''{"code": 1024, "msg": "Login required"}''')
+
+    async def on_api_permission_denied(self):
+        self.write('''{"code": 1025, "msg": "Permission Denied"}''')
+
+    # @abc.abstractmethod
     async def on_goto_login_page(self):
-        pass
+        g_logger.info("Goto login page")
+        self.redirect("/login")
 
     async def login(self, szUsername, szPwd):
         from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
@@ -34,6 +42,41 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
     async def logout(self):
         self.clear_cookie("username")
         self.clear_cookie("token")
+
+def api_login_required():
+    def auth_decorator(func):
+        async def inner(self, *args, **kwargs):
+            if is_empty_string(self.get_argument("username", "")) or is_empty_string(self.get_argument("token", "")):
+                await self.on_api_user_not_login()
+            else:
+                await func(self, *args, **kwargs)
+        return inner
+    return auth_decorator
+
+def api_permission_required(szPermission, szOwner = "root"):
+    def auth_decorator(func):
+        async def inner(self, *args, **kwargs):
+            from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService
+            from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
+
+            szUser = self.get_argument("username", "")
+            if is_empty_string(szUser):
+                await self.on_api_user_not_login()
+                return
+
+            nOwner = await SimpleUserService.get_user_id(szOwner)
+            if nOwner < 0:
+                await self.on_api_user_not_login()
+                return
+
+            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission, nOwner)
+            if bHasPermission:
+                await func(self, *args, **kwargs)
+            else:
+                await self.on_api_permission_denied()
+
+        return inner
+    return auth_decorator
 
 def page_login_required():
     def auth_decorator(func):

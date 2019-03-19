@@ -25,10 +25,6 @@ from pythinkutils.common.StringUtils import *
 
 class LoginHandler(BaseSimpleAuthHandler):
 
-    async def on_goto_login_page(self):
-        g_logger.info("Goto login page")
-        await self.get()
-
     async def post(self):
         szUsername = self.get_argument("username", "")
         szPwd = self.get_argument("password", "")
@@ -68,17 +64,35 @@ class FxxkHandler(BaseSimpleAuthHandler):
 
 class MainHandler(BaseSimpleAuthHandler):
 
-    async def on_goto_login_page(self):
-        g_logger.info("Goto login page")
-        self.redirect("/login")
-
     @page_login_required()
     async def get(self):
         self.write("HOMEPAGE To be continued...")
 
+class ApiHandler(BaseSimpleAuthHandler):
+    @api_login_required()
+    async def post(self):
+        self.write('''{"code": 0, "msg": "ApiHandler success"}''')
+
+    @api_login_required()
+    async def get(self):
+        await self.post()
+
+
+class AnotherApiHandler(BaseSimpleAuthHandler):
+    @api_permission_required("permission_hehe")
+    async def post(self):
+        self.write('''{"code": 0, "msg": "AnotherApiHandler success"}''')
+
+    @api_permission_required("permission_hehe")
+    async def get(self):
+        await self.post()
+
+
 application = tornado.web.Application(handlers = [
     (r"/login", LoginHandler)
     , (r"/fxxk", FxxkHandler)
+    , (r"/api1.json", ApiHandler)
+    , (r"/api2.json", AnotherApiHandler)
     , (r'/', MainHandler)
 ], autoreload=False)
 
