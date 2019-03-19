@@ -121,9 +121,8 @@ def create_table_permission():
                         CREATE TABLE t_thinkauth_permission (
                             `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT
                             , `permission_name` varchar(256) NOT NULL 
-                            , `permission_type` INTEGER NOT NULL DEFAULT 0 
+                            , `owner` bigint(0) UNSIGNED NOT NULL DEFAULT 10000001
                             , `description` varchar(256) 
-
                             , PRIMARY KEY (`id`)
                         );
 
@@ -186,7 +185,33 @@ def create_table_user_permission():
                     ALTER TABLE `t_thinkauth_user_permission` ADD INDEX `IX_user_permission_uid`(`user_id`) USING BTREE;
                     ALTER TABLE `t_thinkauth_user_permission` ADD INDEX `IX_user_permission_pid`(`permission_id`) USING BTREE;
 
-                    insert INTO t_thinkauth_user_permission(user_id, permission_id) VALUES (10000001, 1), (10000001, 2);
+                    insert INTO t_thinkauth_user_permission(user_id, permission_id) 
+                    VALUES 
+                    (10000001, 1)
+                    , (10000001, 2)
+                    , (10000001, 3)
+                    , (10000001, 4)
+                    , (10000001, 5)
+                    , (10000001, 6)
+                    , (10000001, 7)
+                    , (10000001, 8)
+                    , (10000001, 9)
+                    , (10000001, 10)
+                    , (10000001, 11)
+                    , (10000001, 12)
+                    , (10000001, 13)
+                    , (10000001, 14)
+                    , (10000001, 15)
+                    , (10000001, 16)
+                    , (10000001, 17)
+                    , (10000001, 18)
+                    , (10000001, 19)
+                    , (10000001, 20)
+                    , (10000001, 21)
+                    , (10000001, 22)
+                    , (10000001, 23)
+                    , (10000001, 24)
+                    ;
                     '''
 
         for statement in szSql.split(';'):
@@ -218,7 +243,32 @@ def create_table_group_permission():
                     ALTER TABLE `t_thinkauth_group_permission` ADD INDEX `IX_group_permission_uid`(`group_id`) USING BTREE;
                     ALTER TABLE `t_thinkauth_group_permission` ADD INDEX `IX_group_permission_pid`(`permission_id`) USING BTREE;
 
-                    insert INTO t_thinkauth_group_permission(group_id, permission_id) VALUES (10000001, 1), (10000001, 2);
+                    insert INTO t_thinkauth_group_permission(group_id, permission_id) 
+                    VALUES 
+                    (10000001, 1)
+                    , (10000001, 2)
+                    , (10000001, 3)
+                    , (10000001, 4)
+                    , (10000001, 5)
+                    , (10000001, 6)
+                    , (10000001, 7)
+                    , (10000001, 8)
+                    , (10000001, 9)
+                    , (10000001, 10)
+                    , (10000001, 11)
+                    , (10000001, 12)
+                    , (10000001, 13)
+                    , (10000001, 14)
+                    , (10000001, 15)
+                    , (10000001, 16)
+                    , (10000001, 17)
+                    , (10000001, 18)
+                    , (10000001, 19)
+                    , (10000001, 20)
+                    , (10000001, 21)
+                    , (10000001, 22)
+                    , (10000001, 23)
+                    , (10000001, 24);
                     '''
 
         for statement in szSql.split(';'):

@@ -66,13 +66,13 @@ class GroupService(object):
                         return rows[0]
                 except Exception as e:
                     g_logger.error(e)
-                    return -1
+                    return None
                 finally:
                     conn.close()
 
         except Exception as e:
             g_logger.error(e)
-            return -1
+            return None
 
     @classmethod
     async def get_group_id(cls, szGroup, nOwner = 10000001):
