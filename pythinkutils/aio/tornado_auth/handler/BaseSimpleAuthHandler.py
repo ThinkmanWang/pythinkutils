@@ -35,7 +35,7 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
         self.clear_cookie("username")
         self.clear_cookie("token")
 
-def login_required():
+def page_login_required():
     def auth_decorator(func):
         async def inner(self, *args, **kwargs):
             if is_empty_string(self.get_cookie("username")) or is_empty_string(self.get_cookie("token")):
@@ -45,7 +45,7 @@ def login_required():
         return inner
     return auth_decorator
 
-def permission_required(szPermission, szOwner = "root"):
+def page_permission_required(szPermission, szOwner = "root"):
     def auth_decorator(func):
         async def inner(self, *args, **kwargs):
             from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService

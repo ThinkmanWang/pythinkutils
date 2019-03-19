@@ -20,7 +20,7 @@ from tornado.platform.asyncio import AsyncIOMainLoop
 import asyncio
 
 from pythinkutils.common.log import g_logger
-from pythinkutils.aio.tornado_auth.handler.BaseSimpleAuthHandler import BaseSimpleAuthHandler, login_required, permission_required
+from pythinkutils.aio.tornado_auth.handler.BaseSimpleAuthHandler import *
 from pythinkutils.common.StringUtils import *
 
 class LoginHandler(BaseSimpleAuthHandler):
@@ -62,7 +62,7 @@ class FxxkHandler(BaseSimpleAuthHandler):
         g_logger.info("Goto login page")
         self.redirect("/login?redirect_url=%2ffxxk")
 
-    @permission_required("permission_hehe")
+    @page_permission_required("permission_hehe")
     async def get(self):
         self.write("FxxkHandler To be continued...")
 
@@ -72,7 +72,7 @@ class MainHandler(BaseSimpleAuthHandler):
         g_logger.info("Goto login page")
         self.redirect("/login")
 
-    @login_required()
+    @page_login_required()
     async def get(self):
         self.write("HOMEPAGE To be continued...")
 
