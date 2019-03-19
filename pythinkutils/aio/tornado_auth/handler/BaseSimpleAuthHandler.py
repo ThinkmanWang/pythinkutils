@@ -44,3 +44,29 @@ def login_required():
                 await func(self, *args, **kwargs)
         return inner
     return auth_decorator
+
+def permission_required(szPermission, szOwner = "root"):
+    def auth_decorator(func):
+        async def inner(self, *args, **kwargs):
+            from pythinkutils.aio.tornado_auth.service.PermissionService import PermissionService
+            from pythinkutils.aio.tornado_auth.service.SimpleUserService import SimpleUserService
+
+
+            szUser = self.get_cookie("username")
+            if is_empty_string(szUser):
+                await self.on_goto_login_page()
+                return
+
+            nOwner = await SimpleUserService.get_user_id(szOwner)
+            if nOwner < 0:
+                await self.on_goto_login_page()
+                return
+
+            bHasPermission = await PermissionService.user_has_permission(szUser, szPermission, nOwner)
+            if bHasPermission:
+                await func(self, *args, **kwargs)
+            else:
+                await self.on_goto_login_page()
+
+        return inner
+    return auth_decorator
