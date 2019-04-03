@@ -54,7 +54,7 @@ def api_login_required():
                     or is_empty_string(self.get_argument("token", "")):
                 await self.on_api_user_not_login()
             else:
-                bTokenValid = await SimpleUserService.check_token(self.get_argument("uid", ""), self.get_argument("token", ""))
+                bTokenValid = await SimpleUserService.check_token(int(self.get_argument("uid", "-1")), self.get_argument("token", ""))
                 if bTokenValid:
                     await func(self, *args, **kwargs)
                 else:
@@ -75,7 +75,7 @@ def api_permission_required(szPermission):
                 await self.on_api_user_not_login()
                 return
 
-            bTokenValid = await SimpleUserService.check_token(self.get_argument("uid", ""), self.get_argument("token", ""))
+            bTokenValid = await SimpleUserService.check_token(int(self.get_argument("uid", "-1")), self.get_argument("token", ""))
             if False == bTokenValid:
                 await self.on_api_user_not_login()
                 return
@@ -103,7 +103,7 @@ def page_login_required():
                     or is_empty_string(self.get_cookie("token")):
                 await self.on_goto_login_page()
             else:
-                bTokenValid = await SimpleUserService.check_token(self.get_cookie("uid"), self.get_cookie("token"))
+                bTokenValid = await SimpleUserService.check_token(int(self.get_cookie("uid", "-1")), self.get_cookie("token", ""))
                 if bTokenValid:
                     await func(self, *args, **kwargs)
                 else:
