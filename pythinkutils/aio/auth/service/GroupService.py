@@ -12,7 +12,7 @@ from pythinkutils.common.datetime_utils import *
 class GroupService(object):
     @classmethod
     async def create_group(cls, szGroup, szDesc=""):
-        dictGroup = await cls.get_group(szGroup)
+        dictGroup = await cls.get_group_by_name(szGroup)
         if dictGroup is not None:
             return dictGroup
 
@@ -29,7 +29,7 @@ class GroupService(object):
 
                         await conn.commit()
 
-                        dictRet = await cls.get_group(szGroup)
+                        dictRet = await cls.get_group_by_name(szGroup)
                         return dictRet
                 except Exception as e:
                     g_logger.error(e)

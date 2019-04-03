@@ -2,6 +2,7 @@
 
 import sys
 import os
+import uuid
 
 from pythinkutils.aio.auth.service.BaseUserService import BaseUserService
 from pythinkutils.aio.mysql.ThinkAioMysql import ThinkAioMysql
@@ -11,7 +12,7 @@ from pythinkutils.common.datetime_utils import *
 class SimpleUserService(BaseUserService):
     @classmethod
     async def create_user(cls, szUserName, szPwd, nSuperUser=0, nActive=1):
-        dictUser = await cls.get_user(szUserName)
+        dictUser = await cls.get_user_by_username(szUserName)
         if dictUser is not None:
             return None
 
@@ -28,7 +29,7 @@ class SimpleUserService(BaseUserService):
 
                         await conn.commit()
 
-                        dictUser = await cls.get_user(szUserName)
+                        dictUser = await cls.get_user_by_username(szUserName)
                         return dictUser
                 except Exception as e:
                     g_logger.error(e)
@@ -89,12 +90,12 @@ class SimpleUserService(BaseUserService):
                                           , (dictUser["id"], szToken, szExpire))
 
                         await conn.commit()
-                        return szToken
+                        return (dictUser["id"], szUserName, szToken)
                 except Exception as e:
                     g_logger.error(e)
-                    return None
+                    return (-1, szUserName, None)
                 finally:
                     conn.close()
         except Exception as e:
             g_logger.error(e)
-            return None
+            return (-1, szUserName, None)
