@@ -72,7 +72,7 @@ class SimpleUserService(BaseUserService):
     async def login(cls, szUserName, szPwd, nExpireDays=180):
         dictUser = await cls.get_user_by_username_password(szUserName, szPwd)
         if dictUser is None:
-            return None
+            return (-1, szUserName, None)
 
         # make token and insert
         szToken = str(uuid.uuid4()).replace("-", "")
