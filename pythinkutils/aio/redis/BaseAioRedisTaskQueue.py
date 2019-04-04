@@ -5,8 +5,8 @@ import os
 import asyncio
 from abc import *
 
-from thinkutils.log.log import g_logger
-from thinkutils.common_utils.StringUtils import *
+from pythinkutils.common.log import g_logger
+from pythinkutils.common.StringUtils import *
 
 class BaseAioRedisTaskQueue(object):
     __metaclass__ = ABCMeta
@@ -30,8 +30,8 @@ class BaseAioRedisTaskQueue(object):
     async def on_start(self):
         while True:
             try:
-                from aiothinkutils.redis.ThinkAioRedisPool import ThinkAioRedisPool
-                conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
+                from pythinkutils.aio.redis.ThinkAioRedisPool import ThinkAioRedisPool
+                conn_pool = await ThinkAioRedisPool.mk_conn_pool()
                 with await conn_pool as conn:
                     szRet = await conn.execute('LPOP', self.m_szQueueName)
                     if bytes == type(szRet):
@@ -52,8 +52,8 @@ class BaseAioRedisTaskQueue(object):
     @classmethod
     async def put_real(cls, szQueueName = "task_queue_default", szMsg = ""):
         try:
-            from aiothinkutils.redis.ThinkAioRedisPool import ThinkAioRedisPool
-            conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
+            from pythinkutils.aio.redis.ThinkAioRedisPool import ThinkAioRedisPool
+            conn_pool = await ThinkAioRedisPool.mk_conn_pool()
             with await conn_pool as conn:
                 await conn.execute("RPUSH", szQueueName, szMsg)
         except Exception as e:
@@ -61,10 +61,11 @@ class BaseAioRedisTaskQueue(object):
 
     @classmethod
     async def put(cls, szQueueName = "task_queue_default", szMsg = "", nowait = False):
-        if nowait:
-            asyncio.gather(cls.put_real(szQueueName, szMsg))
-        else:
-            await cls.put_real(szQueueName, szMsg)
+        await cls.put_real(szQueueName, szMsg)
+        # if nowait:
+        #     await asyncio.gather(cls.put_real(szQueueName, szMsg))
+        # else:
+        #     await cls.put_real(szQueueName, szMsg)
 
     @classmethod
     def put_nowait(cls, szQueueName = "task_queue_default", szMsg = ""):

@@ -7,8 +7,8 @@ import time
 
 import asyncio
 
-from thinkutils.datetime.datetime_utils import *
-from thinkutils.common_utils.StringUtils import *
+from pythinkutils.common.datetime_utils import *
+from pythinkutils.common.StringUtils import *
 
 class AioRedisLock(object):
 
