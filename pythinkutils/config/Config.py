@@ -45,7 +45,7 @@ class ThinkConfig:
     def get_default_config(cls):
         if cls.m_myConfig is None:
             parser = argparse.ArgumentParser()
-            parser.add_argument("--env", type=str, default="prd", help="--env prd/dev")
+            parser.add_argument("--env", type=str, default="pro", help="--env prd/dev")
             args = parser.parse_args()
             # print(args)
 
