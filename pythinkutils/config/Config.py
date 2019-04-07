@@ -4,7 +4,7 @@ import sys
 import os
 
 import configparser
-
+import argparse
 # from thinkutils.common_utils.singleton import Singleton
 
 class ThinkConfig:
@@ -44,10 +44,19 @@ class ThinkConfig:
     @classmethod
     def get_default_config(cls):
         if cls.m_myConfig is None:
+            parser = argparse.ArgumentParser()
+            parser.add_argument("--env", type=str, default="prd", help="--env prd/dev")
+            args = parser.parse_args()
+            print(args)
+
             config = ThinkConfig()
-            config.read(os.path.dirname(os.path.abspath(__file__)) + "/app.properties")
+            if "dev" == args.env:
+                config.read(os.path.dirname(os.path.abspath(__file__)) + "/app_dev.properties")
+            else:
+                config.read(os.path.dirname(os.path.abspath(__file__)) + "/app.properties")
 
             cls.m_myConfig = config
+
 
         return cls.m_myConfig
 
