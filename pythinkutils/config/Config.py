@@ -47,7 +47,7 @@ class ThinkConfig:
             parser = argparse.ArgumentParser()
             parser.add_argument("--env", type=str, default="prd", help="--env prd/dev")
             args = parser.parse_args()
-            print(args)
+            # print(args)
 
             config = ThinkConfig()
             if "dev" == args.env:
