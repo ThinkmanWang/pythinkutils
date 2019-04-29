@@ -11,8 +11,9 @@ import tornado.web
 
 from pythinkutils.common.StringUtils import *
 from pythinkutils.common.log import g_logger
+from pythinkutils.aio.auth.tornado.handler.BaseAuthHandler import BaseAuthHandler
 
-class BaseSimpleAuthHandler(tornado.web.RequestHandler):
+class BaseSimpleAuthHandler(BaseAuthHandler):
 
     async def on_api_user_not_login(self):
         self.write('''{"code": 1024, "msg": "Login required"}''')
@@ -27,6 +28,8 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
 
     async def login(self, szUsername, szPwd):
         from pythinkutils.aio.auth.service.SimpleUserService import SimpleUserService
+        from pythinkutils.aio.auth.service.PermissionService import PermissionService
+        from pythinkutils.common.object2json import obj2json
 
         nExpireDays = 180
 
@@ -38,12 +41,16 @@ class BaseSimpleAuthHandler(tornado.web.RequestHandler):
         self.set_cookie("username", _szUsername, expires_days = nExpireDays)
         self.set_cookie("token", szToken, expires_days = nExpireDays)
 
+        lstPermissions = await PermissionService.my_permission_list(nUID)
+        self.set_cookie("permissions", obj2json(lstPermissions), expires_days = nExpireDays)
+
         return (nUID, _szUsername, szToken)
 
     async def logout(self):
         self.clear_cookie("uid")
         self.clear_cookie("username")
         self.clear_cookie("token")
+        self.clear_cookie("permissions")
 
 def api_login_required():
     def auth_decorator(func):

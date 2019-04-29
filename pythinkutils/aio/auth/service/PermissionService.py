@@ -167,7 +167,6 @@ class PermissionService(object):
 
     @classmethod
     async def grant_permission_to_user(cls, nPID, nUID):
-        from pythinkutils.aio.tornado_auth.service.BaseUserService import BaseUserService
 
         bHasPermission = await cls.user_has_permission(nUID, nPID)
         if bHasPermission:
@@ -205,7 +204,6 @@ class PermissionService(object):
 
     @classmethod
     async def grant_permission_to_group(cls, nPID, nGID):
-        from pythinkutils.aio.tornado_auth.service.GroupService import GroupService
 
         bHasPermission = await cls.group_has_permission(nGID, nPID)
         if bHasPermission:
@@ -240,3 +238,66 @@ class PermissionService(object):
             await cls.grant_permission_to_group(nPID, nGID)
 
         return True
+
+    @classmethod
+    async def my_permission_list(cls, nUID):
+        if nUID <= 0:
+            return []
+
+        try:
+            conn_pool = await ThinkAioMysql.get_conn_pool()
+            async with conn_pool.acquire() as conn:
+                try:
+                    async with conn.cursor(aiomysql.cursors.DictCursor) as cur:
+                        await cur.execute(
+                            "SELECT                                                 "
+                            "	a.permission_name                                   "
+                            "FROM                                                   "
+                            "	t_thinkauth_permission AS a                           "
+                            "WHERE                                                  "
+                            "	EXISTS (                                              "
+                            "		SELECT                                                 "
+                            "			1                                                     "
+                            "		FROM                                                   "
+                            "			t_thinkauth_user_permission AS b                      "
+                            "			LEFT JOIN t_thinkauth_user AS c ON b.user_id = c.id   "
+                            "		WHERE                                                  "
+                            "			b.permission_id = a.id                                "
+                            "			AND c.id = %s                                   "
+                            "			)                                                     "
+                            "	OR EXISTS (                                           "
+                            "		SELECT                                                 "
+                            "			1                                                     "
+                            "		FROM                                                   "
+                            "			t_thinkauth_group_permission AS d                     "
+                            "		WHERE                                                  "
+                            "			d.group_id IN (                                       "
+                            "				SELECT                                              "
+                            "					f.group_id                                        "
+                            "				FROM                                                "
+                            "					t_thinkauth_user_group AS f                       "
+                            "				WHERE                                               "
+                            "					d.permission_id = a.id                            "
+                            "					AND f.user_id = %s                          "
+                            "				)                                                   "
+                            "	)                                                     "
+                            , (nUID, nUID))
+
+                        rows = await cur.fetchall()
+                        if rows is None or len(rows) <= 0:
+                            return []
+
+                        lstRet = []
+                        for row in rows:
+                            lstRet.append(row["permission_name"])
+
+                        return lstRet
+                except Exception as e:
+                    g_logger.error(e)
+                    return []
+                finally:
+                    conn.close()
+
+        except Exception as e:
+            g_logger.error(e)
+            return []
