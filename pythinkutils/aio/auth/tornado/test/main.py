@@ -103,7 +103,15 @@ application = tornado.web.Application(handlers = [
     , (r"/api2.json", AnotherApiHandler)
     , (r'/', MainHandler)
     , (r"/logout", LogoutHandler)
-], autoreload=False)
+], cookie_secret="BUEa2ckrQtmBofim3aP6cwr/acg0LEu6mHUxq4O3EY0=", autoreload=False)
+
+"""
+>>> import base64
+>>> import uuid
+>>> print base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes)
+BUEa2ckrQtmBofim3aP6cwr/acg0LEu6mHUxq4O3EY0=
+
+"""
 
 async def func1():
     return "Server Started"

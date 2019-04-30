@@ -37,12 +37,12 @@ class BaseSimpleAuthHandler(BaseAuthHandler):
         if is_empty_string(szToken):
             return (nUID, _szUsername, szToken)
 
-        self.set_cookie("uid", "{}".format(nUID), expires_days=nExpireDays)
-        self.set_cookie("username", _szUsername, expires_days = nExpireDays)
-        self.set_cookie("token", szToken, expires_days = nExpireDays)
+        self.set_secure_cookie("uid", "{}".format(nUID), expires_days=nExpireDays)
+        self.set_secure_cookie("username", _szUsername, expires_days = nExpireDays)
+        self.set_secure_cookie("token", szToken, expires_days = nExpireDays)
 
         lstPermissions = await PermissionService.my_permission_list(nUID)
-        self.set_cookie("permissions", obj2json(lstPermissions), expires_days = nExpireDays)
+        self.set_secure_cookie("permissions", obj2json(lstPermissions), expires_days = nExpireDays)
 
         return (nUID, _szUsername, szToken)
 
@@ -105,12 +105,12 @@ def page_login_required():
         async def inner(self, *args, **kwargs):
             from pythinkutils.aio.auth.service.SimpleUserService import SimpleUserService
 
-            if is_empty_string(self.get_cookie("uid")) \
-                    or is_empty_string(self.get_cookie("username")) \
-                    or is_empty_string(self.get_cookie("token")):
+            if is_empty_string(self.get_secure_cookie("uid")) \
+                    or is_empty_string(self.get_secure_cookie("username")) \
+                    or is_empty_string(self.get_secure_cookie("token")):
                 await self.on_goto_login_page()
             else:
-                bTokenValid = await SimpleUserService.check_token(int(self.get_cookie("uid", "-1")), self.get_cookie("token", ""))
+                bTokenValid = await SimpleUserService.check_token(int(self.get_secure_cookie("uid", "-1")), self.get_secure_cookie("token", ""))
                 if bTokenValid:
                     await func(self, *args, **kwargs)
                 else:
@@ -124,9 +124,9 @@ def page_permission_required(szPermission):
             from pythinkutils.aio.auth.service.PermissionService import PermissionService
             from pythinkutils.aio.auth.service.SimpleUserService import SimpleUserService
 
-            nUID = int(self.get_cookie("uid", "-1"))
-            szUser = self.get_cookie("username", "")
-            szToken = self.get_cookie("token", "")
+            nUID = int(self.get_secure_cookie("uid", "-1"))
+            szUser = self.get_secure_cookie("username", "")
+            szToken = self.get_secure_cookie("token", "")
 
             if nUID < 0 or is_empty_string(szUser) or is_empty_string(szToken):
                 await self.on_goto_login_page()
