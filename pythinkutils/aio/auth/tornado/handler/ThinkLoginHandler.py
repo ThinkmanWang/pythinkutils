@@ -24,9 +24,6 @@ g_szLoginPage = '''
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <meta name="description" content="Login - Register Template">
-    <meta name="author" content="Lorenzo Angelino aka MrLolok">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <style>
         body {
@@ -62,7 +59,7 @@ g_szLoginPage = '''
 				
 				#title {
 				    position: relative;
-				    background-color: #DD575C;
+				    background-color: #357ab5;
 				    width: 100%;
 				    padding: 20px 0px;
 				    border-top-left-radius: 0.22em;
@@ -195,12 +192,13 @@ g_szLoginPage = '''
 				
 				input[type=submit] {
 				    padding: 12px 64px;
-				    background: #FF7F4F;
+				    background: #629ce5;
 				    color: #fff;
 				    font-weight: bold;
 				    border: 0 none;
 				    cursor: pointer;
 				    border-radius: 3px;
+				    font-size: 16px;
 				}
 				
 				.register {
