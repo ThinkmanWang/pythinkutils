@@ -34,4 +34,4 @@ class MD5Utils(object):
 
 
 # print(MD5Utils.md5("123456").lower())
-print(MD5Utils.md5_file("log.py"))
+# print(MD5Utils.md5_file("log.py"))
