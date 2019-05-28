@@ -11,7 +11,7 @@ class MD5Utils(object):
     def md5(cls, szText):
         m = hashlib.md5()
         m.update(szText.encode("utf8"))
-        print(m.hexdigest())
+        # print(m.hexdigest())
         return m.hexdigest()
 
     @classmethod
