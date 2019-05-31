@@ -15,7 +15,7 @@ aiomysql = "*"
 aiorwlock = "*"
 aioredis = "*"
 tornado = "*"
-aiofiles = "*"
+aiofiles = "==0.4.0"
 aiologger = "==0.4.0rc1"
 
 [dev-packages]
