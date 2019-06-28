@@ -53,6 +53,7 @@ class BaseCPASeleniumProcess(Process, AbstractEventListener):
         return ""
 
     def on_get_proxy(self):
+        # return "SOCKS5://{}:{}".format(dictProxy["ip"], dictProxy["port"])
         return ""
 
     def on_get_data_dir(self):
