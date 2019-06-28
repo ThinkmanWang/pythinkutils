@@ -17,6 +17,7 @@ aioredis = "*"
 tornado = "*"
 aiofiles = "==0.4.0"
 aiologger = "==0.4.0rc1"
+selenium = "*"
 
 [dev-packages]
 
