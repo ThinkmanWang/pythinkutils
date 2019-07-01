@@ -58,13 +58,13 @@ class ThinkAioRedisPool(object):
         return _conn_pool
 
 
-async def main():
-    # conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
-    with await (await ThinkAioRedisPool.get_conn_pool_ex()) as conn:
-        await conn.execute('set', 'fxxxxk', get_current_time_str())
-
-        szVal = await conn.execute("get", "fxxxxk")
-        print("return val: ", szVal.decode())
-
-if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+# async def main():
+#     # conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
+#     with await (await ThinkAioRedisPool.get_conn_pool_ex()) as conn:
+#         await conn.execute('set', 'fxxxxk', get_current_time_str())
+#
+#         szVal = await conn.execute("get", "fxxxxk")
+#         print("return val: ", szVal.decode())
+#
+# if __name__ == '__main__':
+#     asyncio.get_event_loop().run_until_complete(main())
