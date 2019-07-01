@@ -12,8 +12,13 @@ class ThinkRedis(object):
     g_lock = threading.Lock()
     g_dictConnPool = {}
 
-    def __init__(self):
-        pass
+    @classmethod
+    def get_conn_pool_ex(cls, szGroup="redis"):
+        return cls.get_conn_pool(host=g_config.get(szGroup, "host")
+                                 , password=g_config.get(szGroup, "password")
+                                 , port=int(g_config.get(szGroup, "port"))
+                                 , db=int(g_config.get(szGroup, "db"))
+                                 , max_connections=int(g_config.get(szGroup, "max_connections")))
 
     @classmethod
     def get_conn_pool(cls, host=g_config.get("redis", "host")
