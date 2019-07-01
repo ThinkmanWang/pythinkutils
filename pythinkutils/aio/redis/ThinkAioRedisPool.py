@@ -18,19 +18,18 @@ class ThinkAioRedisPool(object):
 
     @classmethod
     async def get_conn_pool(cls
-                            , host='127.0.0.1'
-                            , password=None
-                            , port=6379
-                            , db=0
+                            , host=ThinkConfig.get_default_config().get("redis", "host")
+                            , password=ThinkConfig.get_default_config().get("redis", "password")
+                            , port=ThinkConfig.get_default_config().get_int("redis", "port")
+                            , db=ThinkConfig.get_default_config().get_int("redis", "db")
                             , max_connections=16):
+
         szHostPortDb = "{}:{}-{}".format(host, port, db)
         if cls.g_dictConnPool.get(szHostPortDb) is None:
+
             async with cls.g_rwlock.writer:
                 if cls.g_dictConnPool.get(szHostPortDb) is None:
-                    connPool = await cls.mk_conn_pool(host=ThinkConfig.get_default_config().get("redis", "host")
-                                                             , password=ThinkConfig.get_default_config().get("redis", "password")
-                                                             , port=ThinkConfig.get_default_config().get_int("redis", "port")
-                                                             , db=ThinkConfig.get_default_config().get_int("redis", "db"))
+                    connPool = await cls.mk_conn_pool(host, password, port, db, max_connections)
 
                     cls.g_dictConnPool[szHostPortDb] = connPool
 
