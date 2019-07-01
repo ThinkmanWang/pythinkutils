@@ -15,6 +15,21 @@ class ThinkAioMysql(object):
     g_rwlock = aiorwlock.RWLock()
 
     @classmethod
+    async def get_conn_pool_ex(cls, szGroup="mysql" ):
+        ret = await cls.get_conn_pool(host=ThinkConfig.get_default_config().get(szGroup, "host")
+                            , port=int(ThinkConfig.get_default_config().get(szGroup, "port"))
+                            , user=ThinkConfig.get_default_config().get(szGroup, "user")
+                            , password=ThinkConfig.get_default_config().get(szGroup, "password")
+                            , db=ThinkConfig.get_default_config().get(szGroup, "db")
+                            , mincached=int(ThinkConfig.get_default_config().get_int(szGroup, "maxconnections") / 2)
+                            , maxcached=int(ThinkConfig.get_default_config().get_int(szGroup, "maxconnections"))
+                            , maxconnections=int(ThinkConfig.get_default_config().get(szGroup, "maxconnections"))
+                            , charset="utf8"
+                            , use_unicode=True)
+
+        return ret
+
+    @classmethod
     async def get_conn_pool(cls
                       , host=ThinkConfig.get_default_config().get("mysql", "host")
                       , port=int(ThinkConfig.get_default_config().get("mysql", "port"))

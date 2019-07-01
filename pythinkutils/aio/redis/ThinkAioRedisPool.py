@@ -17,12 +17,22 @@ class ThinkAioRedisPool(object):
     g_rwlock = aiorwlock.RWLock()
 
     @classmethod
+    async def get_conn_pool_ex(cls, szGroup="redis"):
+        ret = await cls.get_conn_pool(host=ThinkConfig.get_default_config().get(szGroup, "host")
+                            , password=ThinkConfig.get_default_config().get(szGroup, "password")
+                            , port=ThinkConfig.get_default_config().get_int(szGroup, "port")
+                            , db=ThinkConfig.get_default_config().get_int(szGroup, "db")
+                            , max_connections=int(ThinkConfig.get_default_config().get_int(szGroup, "max_connections")))
+
+        return ret
+
+    @classmethod
     async def get_conn_pool(cls
                             , host=ThinkConfig.get_default_config().get("redis", "host")
                             , password=ThinkConfig.get_default_config().get("redis", "password")
                             , port=ThinkConfig.get_default_config().get_int("redis", "port")
                             , db=ThinkConfig.get_default_config().get_int("redis", "db")
-                            , max_connections=16):
+                            , max_connections=int(ThinkConfig.get_default_config().get_int("redis", "max_connections"))):
 
         szHostPortDb = "{}:{}-{}".format(host, port, db)
         if cls.g_dictConnPool.get(szHostPortDb) is None:
@@ -48,13 +58,13 @@ class ThinkAioRedisPool(object):
         return _conn_pool
 
 
-# async def main():
-#     # conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
-#     with await (await ThinkAioRedisPool.get_conn_pool()) as conn:
-#         await conn.execute('set', 'fxxxxk', get_current_time_str())
-#
-#         szVal = await conn.execute("get", "fxxxxk")
-#         print("return val: ", szVal.decode())
-#
-# if __name__ == '__main__':
-#     asyncio.get_event_loop().run_until_complete(main())
+async def main():
+    # conn_pool = await ThinkAioRedisPool.get_default_conn_pool()
+    with await (await ThinkAioRedisPool.get_conn_pool_ex()) as conn:
+        await conn.execute('set', 'fxxxxk', get_current_time_str())
+
+        szVal = await conn.execute("get", "fxxxxk")
+        print("return val: ", szVal.decode())
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
