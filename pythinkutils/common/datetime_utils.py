@@ -17,6 +17,11 @@ def timestamp2str(tt):
     t2 = time.strftime("%Y-%m-%d %H:%M:%S", t1)
     return t2
 
+def timestamp2date(tt):
+    t1 = time.localtime(float(tt))
+    t2 = time.strftime("%Y-%m-%d", t1)
+    return t2
+
 def hour():
     temp = time.localtime(time.time())
     szTime = time.strftime("%H", temp)
@@ -76,6 +81,14 @@ def date_between_start_end(szStart, szEnd):
         lstDate.append(dateStart.strftime('%Y-%m-%d'))
 
     return lstDate
+
+def start_end_of_week(nYear, nWeek):
+    dateStart = time.strptime('{}-{}-1'.format(str(nYear).zfill(4), str(nWeek).zfill(2)), '%Y-%U-%w')
+    dateStart = time.mktime(dateStart)
+
+    dateEnd = int(dateStart) + 3600 * 24 * 6
+
+    return timestamp2date(dateStart), timestamp2date(dateEnd)
 
 # print(date_between_start_end("2019-03-02", "2019-03-03"))
 # print(date_between_start_end("2019-03-02", "2019-03-02"))
@@ -156,3 +169,6 @@ datetime.date(2002, 1, 31)
 '''
 
 # print hour()
+
+# for i in range(100):
+#     print(start_end_of_week(2019, i))
