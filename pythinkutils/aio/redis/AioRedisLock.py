@@ -18,28 +18,8 @@ class AioRedisLock(object):
 
     @classmethod
     async def acquire(cls, conn=None, lockname='', acquire_timeout=10):
-        if conn is None:
-            return None
-
-        if is_empty_string(lockname):
-            return None
-
-        szVal = str(uuid.uuid4())
-        nEndTime = get_timestamp() + acquire_timeout
-        szKey = cls.mk_key(lockname)
-
-        while get_timestamp() < nEndTime:
-            try:
-                nRet = await conn.execute('SETNX', szKey, szVal)
-                if 1 == nRet:
-                    return szVal
-
-                await asyncio.sleep(0.1)
-            except Exception as e:
-                await asyncio.sleep(0.1)
-
-        return None
-
+        szVal = await cls.acquire_with_timeout(conn, lockname, acquire_timeout)
+        return szVal
 
     @classmethod
     async def acquire_with_timeout(cls, conn=None, lockname='', acquire_timeout=10, lock_timeout=60):
