@@ -21,11 +21,13 @@ class TestConsumer(ThinkAioKafkaConsumer):
         g_aio_logger.info(szMsg)
 
 
-async def main():
+def main():
+    loop = asyncio.get_event_loop()
+
     myConsumer = TestConsumer(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), "myGroup")
     myConsumer.start()
 
-    asyncio.get_running_loop().run_forever()
+    loop.run_forever()
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()

@@ -33,10 +33,7 @@ class ThinkAioKafkaConsumer(object):
     async def on_start(self):
         while True:
             consumer = AIOKafkaConsumer(self.m_szTopic, loop=asyncio.get_event_loop(), bootstrap_servers=self.m_szHost, group_id=self.m_szGroup)
-            # consumer = AIOKafkaConsumer(
-            #     'think-topic',
-            #     loop=loop, bootstrap_servers='localhost:9092',
-            #     group_id="myGroup")
+
             try:
                 await consumer.start()
 
