@@ -9,13 +9,7 @@ def acquire_lock(conn=None, lockname='', acquire_timeout=20):
     '''使用redis实现最简单的锁
     使用setnx命令设置锁的值， 设置成功即为获取锁成功
     '''
-    identifier = str(uuid.uuid4())
-    end_time = time.time() + acquire_timeout
-    while time.time() < end_time:
-        if conn.setnx("lock:" + lockname, identifier):
-            return identifier
-        time.sleep(.001)
-    return None
+    return acquire_lock_with_timeout(conn, lockname, acquire_timeout)
 
 def release_lock(conn=None, lockname='', identifier=''):
     pipe = conn.pipeline(True)
