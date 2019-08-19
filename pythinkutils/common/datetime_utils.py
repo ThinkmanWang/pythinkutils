@@ -53,7 +53,7 @@ def addmonths(date,months = 0):
         date+=datetime.timedelta(days=-1)
         return date
 
-def last_day_of_month(any_day):
+def last_day_of_month_by_date(any_day):
     next_month = any_day.replace(day=28) + datetime.timedelta(days=4)  # this will never fail
     return next_month - datetime.timedelta(days=next_month.day)
 
@@ -171,4 +171,5 @@ datetime.date(2002, 1, 31)
 # print hour()
 
 # for i in range(100):
-#     print(start_end_of_week(2019, i))
+#     szText = "{} {}".format(i + 1, start_end_of_week(2019, i))
+#     print(szText)
