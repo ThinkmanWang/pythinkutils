@@ -2,6 +2,8 @@
 
 import os
 
-def create_folder_if_not_exists(szPath):
-    if False == os.path.exists(szPath):
-        os.makedirs(szPath)
+class FileUtils(object):
+    @classmethod
+    def create_folder_if_not_exists(cls, szPath):
+        if False == os.path.exists(szPath):
+            os.makedirs(szPath)

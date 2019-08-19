@@ -128,7 +128,7 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
 
 def setup_custom_logger():
     LOG_PATH = 'log'
-    create_folder_if_not_exists(LOG_PATH)
+    FileUtils.create_folder_if_not_exists(LOG_PATH)
 
     LOG_FILE = "{0}/{1}".format(LOG_PATH, "thinklog")
 

@@ -29,7 +29,7 @@ from pythinkutils.common.FileUtils import *
 
 def setup_custom_logger():
     LOG_PATH = 'log'
-    create_folder_if_not_exists(LOG_PATH)
+    FileUtils.create_folder_if_not_exists(LOG_PATH)
 
     handler = AsyncTimedRotatingFileHandler(
         filename="log/think.log",
