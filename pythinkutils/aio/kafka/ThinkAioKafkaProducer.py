@@ -42,4 +42,5 @@ class ThinkAioKafkaProducer(object):
             producer = cls.g_dictConnPool.get(szHost)
             del cls.g_dictConnPool[szHost]
             await producer.stop()
+            return -1
 
