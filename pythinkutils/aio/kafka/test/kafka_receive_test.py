@@ -21,12 +21,13 @@ class TestConsumer(ThinkAioKafkaConsumer):
         # random.randint
         # print("consumed: ", msg.topic, msg.partition, msg.offset, msg.key, msg.value, msg.timestamp)
         szMsg = str(msg.value, "utf-8")
-        g_aio_logger.info(szMsg)
+        await g_aio_logger.info(szMsg)
 
 async def send_test():
     while True:
         await asyncio.sleep(5)
-        await ThinkAioKafkaProducer.send(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), get_current_time_str())
+        nRet = await ThinkAioKafkaProducer.send(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), get_current_time_str())
+        await g_aio_logger.info(nRet)
 
 def main():
     loop = asyncio.get_event_loop()
