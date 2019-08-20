@@ -8,6 +8,9 @@ from pythinkutils.aio.kafka.ThinkAioKafkaConsumer import ThinkAioKafkaConsumer
 from pythinkutils.config.Config import g_config
 from pythinkutils.aio.common.aiolog import g_aio_logger
 
+from pythinkutils.aio.kafka.ThinkAioKafkaProducer import ThinkAioKafkaProducer
+from pythinkutils.common.datetime_utils import *
+
 class TestConsumer(ThinkAioKafkaConsumer):
 
     def __init__(self, szHost, szTopic, szGroup):
@@ -20,12 +23,18 @@ class TestConsumer(ThinkAioKafkaConsumer):
         szMsg = str(msg.value, "utf-8")
         g_aio_logger.info(szMsg)
 
+async def send_test():
+    while True:
+        await asyncio.sleep(5)
+        await ThinkAioKafkaProducer.send(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), get_current_time_str())
 
 def main():
     loop = asyncio.get_event_loop()
 
     myConsumer = TestConsumer(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), "myGroup")
     myConsumer.start()
+
+    asyncio.gather(send_test())
 
     loop.run_forever()
 
