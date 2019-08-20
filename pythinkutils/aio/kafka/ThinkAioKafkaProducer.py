@@ -30,12 +30,12 @@ class ThinkAioKafkaProducer(object):
                     except Exception as e:
                         await g_aio_logger.error(e)
 
-        if cls.g_dictConnPool.get(szHost) is None:
+        producer = cls.g_dictConnPool.get(szHost)
+        if producer is None:
             return -1
 
         try:
             # Produce message
-            producer = cls.g_dictConnPool.get(szHost)
             await producer.send_and_wait(szTopic, szMsg.encode("utf-8"))
             return len(szMsg)
         except Exception as e:
