@@ -27,7 +27,7 @@ class ThinkAioKafkaConsumer(object):
         self.m_bStarted = True
 
     @abstractmethod
-    async def on_task(self, msg):
+    async def on_msg(self, msg):
         pass
 
     async def on_start(self):
@@ -39,7 +39,7 @@ class ThinkAioKafkaConsumer(object):
 
                 # Consume messages
                 async for msg in consumer:
-                    await self.on_task(msg)
+                    await self.on_msg(msg)
                     # print("consumed: ", msg.topic, msg.partition, msg.offset, msg.key, msg.value, msg.timestamp)
             except Exception as e:
                 pass

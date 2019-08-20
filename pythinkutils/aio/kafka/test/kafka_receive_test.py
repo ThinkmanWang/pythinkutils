@@ -13,7 +13,7 @@ class TestConsumer(ThinkAioKafkaConsumer):
     def __init__(self, szHost, szTopic, szGroup):
         super().__init__(szHost, szTopic, szGroup)
 
-    async def on_task(self, msg):
+    async def on_msg(self, msg):
         # await asyncio.sleep(5)
         # random.randint
         # print("consumed: ", msg.topic, msg.partition, msg.offset, msg.key, msg.value, msg.timestamp)
