@@ -39,7 +39,6 @@ class ThinkAioKafkaProducer(object):
             await producer.send_and_wait(szTopic, szMsg.encode("utf-8"))
             return len(szMsg)
         except Exception as e:
-            producer = cls.g_dictConnPool.get(szHost)
             del cls.g_dictConnPool[szHost]
             await producer.stop()
             return -1
