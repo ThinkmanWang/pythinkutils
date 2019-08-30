@@ -23,7 +23,7 @@ def create_table_group():
         );
             
         alter table t_thinkauth_group AUTO_INCREMENT=10000001;
-        ALTER TABLE `db_thinkutils`.`t_thinkauth_group` ADD INDEX `IX_group_name`(`name`) USING BTREE;
+        ALTER TABLE `t_thinkauth_group` ADD INDEX `IX_group_name`(`name`) USING BTREE;
         
         insert into t_thinkauth_group(name) VALUES ('admin');
         insert into t_thinkauth_group(name) VALUES ('guest');
@@ -58,9 +58,9 @@ def create_table_user():
                 );
 
                 alter table t_thinkauth_user AUTO_INCREMENT=10000001;
-                ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_name`(`username`) USING BTREE;
-                ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_active`(`is_active`) USING BTREE;
-                ALTER TABLE `db_thinkutils`.`t_thinkauth_user` ADD INDEX `IX_user_date_added`(`date_added`) USING BTREE;
+                ALTER TABLE `t_thinkauth_user` ADD INDEX `IX_user_name`(`username`) USING BTREE;
+                ALTER TABLE `t_thinkauth_user` ADD INDEX `IX_user_active`(`is_active`) USING BTREE;
+                ALTER TABLE `t_thinkauth_user` ADD INDEX `IX_user_date_added`(`date_added`) USING BTREE;
 
                 INSERT INTO t_thinkauth_user(username, password, is_superuser) VALUES ('root', 'Ab123145', 1);
                 INSERT INTO t_thinkauth_user(username, password) VALUES ('thinkman', 'Ab123145');
