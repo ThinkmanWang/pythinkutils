@@ -32,7 +32,7 @@ async def send_test():
 def main():
     loop = asyncio.get_event_loop()
 
-    myConsumer = TestConsumer(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), "myGroup")
+    myConsumer = TestConsumer(g_config.get("kafka", "host"), g_config.get("kafka", "topic"), "thinkman")
     myConsumer.start()
 
     asyncio.gather(send_test())
