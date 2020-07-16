@@ -10,11 +10,10 @@ from tornado.tcpclient import TCPClient
 from tornado.iostream import StreamClosedError
 from tornado import gen
 
-from test.tornado.MyEchoServer import MyEchoServer
-
 # from pythinkutils.aio.common.aiolog import g_aio_logger
 
 ENCODING = "utf-8"
+EOF = b"\r\n"
 
 async def echo(stream, text):
     if text is None or len(text.strip()) <= 0:
@@ -25,9 +24,9 @@ async def echo(stream, text):
     # print(type(byteStr))
 
     await stream.write(text.encode(ENCODING))
-    await stream.write(MyEchoServer.EOF)
+    await stream.write(EOF)
 
-    byteData = await stream.read_until(MyEchoServer.EOF)
+    byteData = await stream.read_until(EOF)
     szText = byteData.decode(ENCODING)
     print("reply>>> " + szText)
 
