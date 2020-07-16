@@ -25,13 +25,13 @@ class TCPConnection(object):
 
     def on_close(self):
         if self.__stream is not None \
-                and False == self.__stream.closed():
+                and self.__stream.closed() is False:
             self.__stream.close()
             self.__stream = None
 
     async def on_start(self):
         while self.__stream is not None \
-                and False == self.__stream.closed():
+                and self.__stream.closed() is False:
             try:
                 byteData = await self.__stream.read_until(b"\r\n")
                 szText = byteData.decode(TCPConnection.ENCODING)
