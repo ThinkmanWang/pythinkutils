@@ -14,8 +14,6 @@ from pythinkutils.aio.common.aiolog import g_aio_logger
 
 class TCPConnection(object):
 
-    ENCODING = "utf-8"
-
     def __init__(self, stream, address):
         self.__stream = stream
         self.__address = address
@@ -33,8 +31,8 @@ class TCPConnection(object):
         while self.__stream is not None \
                 and self.__stream.closed() is False:
             try:
-                byteData = await self.__stream.read_until(b"\r\n")
-                szText = byteData.decode(TCPConnection.ENCODING)
+                byteData = await self.__stream.read_until(MyEchoServer.EOF)
+                szText = byteData.decode(MyEchoServer.ENCODING)
 
                 await g_aio_logger.info(szText)
 
@@ -45,6 +43,9 @@ class TCPConnection(object):
         await g_aio_logger.info("Connection closed!!!")
 
 class MyEchoServer(TCPServer):
+    ENCODING = "utf-8"
+    EOF = b"\r\n"
+
     async def handle_stream(self, stream, address):
         TCPConnection(stream, address)
         await g_aio_logger.info("Listening...")
