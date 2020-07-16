@@ -24,7 +24,8 @@ class TCPConnection(object):
         self.__stream.set_close_callback(self.on_close)
 
     def on_close(self):
-        if self.__stream is not None and False == self.__stream.closed():
+        if self.__stream is not None \
+                and False == self.__stream.closed():
             self.__stream.close()
             self.__stream = None
 
