@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from struct import *
+from io import StringIO
 
 class BinaryStream:
-    def __init__(self, base_stream):
-        self.base_stream = base_stream
+    def __init__(self, base_stream = None):
+        if base_stream is None:
+            self.base_stream = BytesIO()
+        else:
+            self.base_stream = base_stream
 
     def readByte(self):
         return self.base_stream.read(1)
