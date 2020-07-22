@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from struct import *
-from io import StringIO
+from io import BytesIO
 
 class BinaryStream:
     def __init__(self, base_stream = None):
