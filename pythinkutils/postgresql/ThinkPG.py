@@ -65,9 +65,12 @@ class ThinkPG:
 #
 #     conn = ThinkPG.get_conn_pool_ex().getconn()
 #     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-#     cur.execute("""SELECT 1 as fxxk""")
-#     rows = cur.fetchall()
-#     print(rows)
+#     # cur.execute("""SELECT count(1) as cnt from t_test_col """)
+#     # rows = cur.fetchall()
+#     # print(rows)
+#
+#     cur.execute("INSERT INTO t_test_col(id, name, score) VALUES (%s, %s, %s)", (1024000, "Thinkman Wang", 99))
+#     conn.commit()
 #
 # if __name__ == '__main__':
 #     main()
