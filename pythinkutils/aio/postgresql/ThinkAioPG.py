@@ -75,7 +75,7 @@ class ThinkAioPG(object):
 #
 #         print(ret)
 #
-#         await cur.execute("INSERT INTO t_test_col(id, name, score) VALUES (%s, %s, %s)", (1024001, "Thinkman Wang", 99))
+#         # await cur.execute("INSERT INTO t_test_col(id, name, score) VALUES (%s, %s, %s)", (1024001, "Thinkman Wang", 99))
 #
 # if __name__ == '__main__':
 #     loop = asyncio.get_event_loop()
