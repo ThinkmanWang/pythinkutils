@@ -20,6 +20,8 @@ aiologger = "==0.4.0rc1"
 selenium = "*"
 aiokafka = "*"
 watchdog = "*"
+aiopg = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
