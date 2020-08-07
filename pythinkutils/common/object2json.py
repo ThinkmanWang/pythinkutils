@@ -50,10 +50,13 @@ def object2dict(obj):
 class ObjJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         from datetime import date, datetime
+        from decimal import Decimal
 
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
+        elif isinstance(obj, Decimal):
+            return float(obj)
         else:
             return object2dict(obj)
