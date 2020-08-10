@@ -54,8 +54,8 @@ def addmonths(date,months = 0):
         return date
 
 def last_day_of_month_by_date(any_day):
-    next_month = any_day.replace(day=28) + datetime.timedelta(days=4)  # this will never fail
-    return next_month - datetime.timedelta(days=next_month.day)
+    next_month = any_day.replace(day=28) + timedelta(days=4)  # this will never fail
+    return next_month - timedelta(days=next_month.day)
 
 def first_day_of_month(nDiffMon = 0):
     today = date.today()
