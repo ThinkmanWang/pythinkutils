@@ -30,19 +30,19 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
             self.suffix = "%Y-%m-%d_%H-%M-%S"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$"
         elif self.when == 'M':
-            self.interval = 60 # one minute
+            self.interval = 60 # check every minute
             self.suffix = "%Y-%m-%d_%H-%M"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}$"
         elif self.when == 'H':
-            self.interval = 60 * 60 # one hour
+            self.interval = 60 # check every minute
             self.suffix = "%Y-%m-%d_%H"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}$"
         elif self.when == 'D' or self.when == 'MIDNIGHT':
-            self.interval = 60 * 60 * 24 # one day
+            self.interval = 60 # check every minute
             self.suffix = "%Y-%m-%d"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}$"
         elif self.when.startswith('W'):
-            self.interval = 60 * 60 * 24 * 7 # one week
+            self.interval = 60 # check every minute
             if len(self.when) != 2:
                 raise ValueError("You must specify a day for weekly rollover from 0 to 6 (0 is Monday): %s" % self.when)
             if self.when[1] < '0' or self.when[1] > '6':
@@ -132,6 +132,7 @@ def setup_custom_logger():
 
     LOG_FILE = "{0}/{1}".format(LOG_PATH, "thinklog")
 
+    # logging.Formatter.converter = time.gmtime
     formatter = logging.Formatter("[%(asctime)s] %(threadName)s - %(pathname)s %(funcName)s():%(lineno)d  %(levelname)s \t%(message)s")  # same as default
     # formatter = logging.Formatter('%(asctime)s [%(pathname)s: %(lineno)d] %(levelname)s %(message)s')
 
@@ -155,7 +156,7 @@ def setup_custom_logger():
     handler = TimedRotatingFileHandler(LOG_FILE,
                                        when="h",
                                        interval=1,
-                                       backupCount=48)
+                                       backupCount=24)
 
     # try:
     #     raise RuntimeError("Opa!")
