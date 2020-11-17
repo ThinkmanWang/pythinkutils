@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pythinkutils.common.PrettyTable import PrettyTable
+from prettytable import PrettyTable
 
 def main():
     table = PrettyTable()
@@ -10,8 +10,6 @@ def main():
     table.add_row(["Chris", 20, "Cairns"])
     table.add_row(["David", 20, "Sydney"])
     table.add_row(["Ella", 20, "Melbourne"])
-
-
 
     print(table)
 

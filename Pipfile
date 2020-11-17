@@ -22,6 +22,9 @@ aiokafka = "*"
 watchdog = "*"
 aiopg = "*"
 psycopg2-binary = "*"
+tqdm = "*"
+faker = "*"
+prettytable = "*"
 
 [dev-packages]
 
