@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pythinkutils.common.StringUtils import *
+
 class CSVUtils(object):
 
     @classmethod
@@ -30,3 +32,55 @@ class CSVUtils(object):
                     lstRet.append(dictItem)
 
             return lstRet
+
+    @classmethod
+    def dictlist_2_csv(cls, lstData, szFilePath, szHeader = None):
+        def read_header_from_dict(dictItem):
+            lstHeader = []
+            for szKey in dictItem.keys():
+                lstHeader.append(szKey)
+
+            return lstHeader
+
+
+        if is_empty_string(szFilePath) or lstData is None or len(lstData) <= 0:
+            return
+
+        lstHeader = read_header_from_dict(lstData[0])
+        if is_empty_string(szHeader):
+            szHeader = ""
+            nPos = 0
+            for _szHeader in lstHeader:
+                if 0 == nPos:
+                    szHeader += _szHeader
+                else:
+                    szHeader += ","+_szHeader
+                nPos += 1
+        else:
+            pass
+
+        szHeader = szHeader.strip()
+        szHeader += "\n"
+
+        with open(szFilePath, 'w', encoding="UTF-8-sig") as csvFile:
+            csvFile.write(szHeader)
+
+            for dictItem in lstData:
+                szLine = ""
+                nPos = 0
+                for _header in lstHeader:
+                    if 0 == nPos:
+                        szLine = "{}".format(dictItem[_header])
+                    else:
+                        szLine += ",{}".format(dictItem[_header])
+
+                    nPos += 1
+                szLine += "\n"
+                csvFile.write(szLine)
+
+
+# lstData = []
+# lstData.append({"a":1, "b":2})
+# lstData.append({"a":3, "b":4})
+# lstData.append({"a":5, "b":6})
+# CSVUtils.dictlist_2_csv(lstData, "out.csv")
