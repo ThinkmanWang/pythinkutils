@@ -25,6 +25,7 @@ psycopg2-binary = "*"
 tqdm = "*"
 faker = "*"
 prettytable = "*"
+pyjwt = "*"
 
 [dev-packages]
 
