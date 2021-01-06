@@ -20,9 +20,11 @@ from pythinkutils.common.StringUtils import *
 from pythinkutils.common.object2json import obj2json
 
 class MainHandler(BaseHandler):
+    async def post(self):
+        self.write("HOMEPAGE To be continued...")
 
     async def get(self):
-        self.write("HOMEPAGE To be continued...")
+        await self.post()
 
 class AuthHandler(JWTHandler):
 
