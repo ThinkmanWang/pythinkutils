@@ -88,18 +88,18 @@ class TokenUtils:
             await g_aio_logger.error(ex)
             return 0
 
-async def main():
-    szToken = await TokenUtils.auth_token("1234", "5678")
-    await g_aio_logger.info(szToken)
-
-    dictRet = await TokenUtils.get_info(szToken)
-    await g_aio_logger.info(obj2json(dictRet))
-
-    await g_aio_logger.info(obj2json(await TokenUtils.parse_token(szToken)))
-    await g_aio_logger.info(await TokenUtils.expire_time(szToken))
-
-    # await g_aio_logger.shutdown()
-
-
-if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+# async def main():
+#     szToken = await TokenUtils.auth_token("1234", "5678")
+#     await g_aio_logger.info(szToken)
+#
+#     dictRet = await TokenUtils.get_info(szToken)
+#     await g_aio_logger.info(obj2json(dictRet))
+#
+#     await g_aio_logger.info(obj2json(await TokenUtils.parse_token(szToken)))
+#     await g_aio_logger.info(await TokenUtils.expire_time(szToken))
+#
+#     # await g_aio_logger.shutdown()
+#
+#
+# if __name__ == '__main__':
+#     asyncio.get_event_loop().run_until_complete(main())
