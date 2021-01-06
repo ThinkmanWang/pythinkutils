@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from pythinkutils.aio.jwt.tornado.handler.BaseHandler import BaseHandler
+from pythinkutils.aio.jwt.tornado.handler.AuthHandler import AuthHandler
 from pythinkutils.common.StringUtils import *
 
-class JWTHandler(BaseHandler):
+class JWTHandler(AuthHandler):
 
     async def auth_token(self, szAppId, szSecret):
         from pythinkutils.aio.jwt.TokenUtils import TokenUtils
 
         return await TokenUtils.auth_token(szAppId, szSecret)
+
+    async def token_valid(self):
+        from pythinkutils.aio.jwt.TokenUtils import TokenUtils
+
+        szToken = self.get_token()
+        if is_empty_string(szToken):
+            return False
+
+        nExpire = await TokenUtils.expire_time(szToken)
+        return nExpire > 0
 
     async def get_uid_name(self):
         try:

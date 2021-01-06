@@ -18,14 +18,14 @@ class BaseHandler(tornado.web.RequestHandler):
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
 
-    async def get_uid(self):
-        pass
-
-    async def get_userinfo(self):
-        pass
-
-    async def get_token(self):
-        pass
-
-    async def get_permission_list(self):
-        pass
+    # async def get_uid(self):
+    #     pass
+    #
+    # async def get_userinfo(self):
+    #     pass
+    #
+    # async def get_token(self):
+    #     pass
+    #
+    # async def get_permission_list(self):
+    #     pass
