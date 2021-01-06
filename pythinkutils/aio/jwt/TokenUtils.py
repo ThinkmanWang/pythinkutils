@@ -27,7 +27,7 @@ class TokenUtils:
             if 200 != dictRet["code"]:
                 return None
 
-            return dictRet["token"]
+            return dictRet
 
         except Exception as ex:
             await g_aio_logger.error(ex)
