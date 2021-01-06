@@ -8,6 +8,7 @@ import tornado.options
 import tornado.web
 from tornado import gen
 import aiomysql
+from tornado.routing import RuleRouter, Rule, PathMatches
 
 from tornado.httpserver import HTTPServer
 from tornado.platform.asyncio import AsyncIOMainLoop
@@ -21,11 +22,11 @@ from pythinkutils.common.object2json import obj2json
 from pythinkutils.common.AjaxResult import AjaxResult
 
 class MainHandler(BaseHandler):
-    async def post(self):
+    async def post(self, szPath):
         self.write("HOMEPAGE To be continued...")
 
-    async def get(self):
-        await self.post()
+    async def get(self, szPath):
+        await self.post(szPath)
 
 class AuthHandler(JWTHandler):
 
@@ -45,7 +46,7 @@ async def on_server_started():
 
 application = tornado.web.Application(handlers = [
     (r"/auth/token", AuthHandler)
-    , (r"/", MainHandler)
+    , (r"/(.*)", MainHandler)
 ], cookie_secret="BUEa2ckrQtmBofim3aP6cwr/acg0LEu6mHUxq4O3EY0=", autoreload=False)
 
 if __name__ == '__main__':
