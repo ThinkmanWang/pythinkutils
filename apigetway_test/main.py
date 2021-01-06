@@ -18,6 +18,7 @@ from pythinkutils.aio.jwt.tornado.handler.BaseHandler import BaseHandler
 from pythinkutils.aio.jwt.tornado.handler.JWTHandler import JWTHandler
 from pythinkutils.common.StringUtils import *
 from pythinkutils.common.object2json import obj2json
+from pythinkutils.common.AjaxResult import AjaxResult
 
 class MainHandler(BaseHandler):
     async def post(self):
@@ -32,7 +33,7 @@ class AuthHandler(JWTHandler):
         dictToken = await self.create_token(self.get_argument("appid"), self.get_argument("secret"))
 
         if dictToken is None:
-            return obj2json({"code": 500, "msg": "Server Error"})
+            return obj2json(AjaxResult.error())
 
         self.write(obj2json(dictToken))
 

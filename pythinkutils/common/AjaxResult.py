@@ -5,3 +5,7 @@ class AjaxResult:
         self.code = code
         self.msg = msg
         self.data = data
+
+    @classmethod
+    def error(cls):
+        return AjaxResult(500, "Server Error")
