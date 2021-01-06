@@ -26,6 +26,7 @@ tqdm = "*"
 faker = "*"
 prettytable = "*"
 pyjwt = "*"
+requests = "*"
 
 [dev-packages]
 
