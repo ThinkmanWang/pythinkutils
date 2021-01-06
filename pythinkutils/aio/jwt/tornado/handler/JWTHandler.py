@@ -5,7 +5,7 @@ from pythinkutils.common.StringUtils import *
 
 class JWTHandler(AuthHandler):
 
-    async def auth_token(self, szAppId, szSecret):
+    async def create_token(self, szAppId, szSecret):
         from pythinkutils.aio.jwt.TokenUtils import TokenUtils
 
         return await TokenUtils.auth_token(szAppId, szSecret)
@@ -13,7 +13,7 @@ class JWTHandler(AuthHandler):
     async def token_valid(self):
         from pythinkutils.aio.jwt.TokenUtils import TokenUtils
 
-        szToken = self.get_token()
+        szToken = await self.get_token()
         if is_empty_string(szToken):
             return False
 
@@ -33,7 +33,7 @@ class JWTHandler(AuthHandler):
     async def get_userinfo(self):
         from pythinkutils.aio.jwt.TokenUtils import TokenUtils
 
-        szToken = self.get_token()
+        szToken = await self.get_token()
         if is_empty_string(szToken):
             return None
 

@@ -4,7 +4,7 @@ from pythinkutils.aio.jwt.tornado.handler.BaseHandler import BaseHandler
 from pythinkutils.common.StringUtils import *
 
 class AuthHandler(BaseHandler):
-    async def auth_token(self, szAppId, szSecret):
+    async def create_token(self, szAppId, szSecret):
         pass
 
     async def token_valid(self):
