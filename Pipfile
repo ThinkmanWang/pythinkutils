@@ -27,6 +27,8 @@ faker = "*"
 prettytable = "*"
 pyjwt = "*"
 requests = "*"
+aiohttp-requests = "*"
+aiohttp = "*"
 
 [dev-packages]
 

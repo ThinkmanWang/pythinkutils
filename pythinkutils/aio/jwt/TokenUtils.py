@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import requests
-import json
+import asyncio
 import jwt
-import redis
+from aiohttp_requests import requests
 
-from pythinkutils.common.log import g_logger
 from pythinkutils.config.Config import g_config
 from pythinkutils.common.object2json import *
-from pythinkutils.redis.ThinkRedis import ThinkRedis
+from pythinkutils.aio.redis.ThinkAioRedisPool import ThinkAioRedisPool
+from pythinkutils.aio.common.aiolog import g_aio_logger
 
 class TokenUtils:
 
@@ -16,46 +15,48 @@ class TokenUtils:
     JWT_SALT = ""
 
     @classmethod
-    def auth_token(cls, szAppId, szSecret):
+    async def auth_token(cls, szAppId, szSecret):
         try:
             szUrl = "{}{}".format(TokenUtils.g_szHost, "/ruoyi-api/auth/token")
-            resp = requests.post(szUrl, data={"appid": szAppId, "secret": szSecret})
+            resp = await requests.post(szUrl, data={"appid": szAppId, "secret": szSecret})
 
-            if 200 != resp.status_code:
+            if 200 != resp.status:
                 return None
 
-            dictRet = json.loads(resp.text)
+            dictRet = json.loads(await resp.text())
             if 200 != dictRet["code"]:
                 return None
 
             return dictRet["token"]
+
         except Exception as ex:
-            g_logger.error(ex)
+            await g_aio_logger.error(ex)
             return None
 
     @classmethod
-    def get_info(cls, szToken):
+    async def get_info(cls, szToken):
         try:
             szUrl = "{}{}".format(TokenUtils.g_szHost, "/ruoyi-api/getInfo")
             dictHeader = {
                 "Authorization": "Bearer {}".format(szToken)
             }
 
-            resp = requests.get(szUrl, headers = dictHeader)
-            if 200 != resp.status_code:
+            resp = await requests.get(szUrl, headers=dictHeader)
+            if 200 != resp.status:
                 return None
 
-            dictRet = json.loads(resp.text)
+            dictRet = json.loads(await resp.text())
             if 200 != dictRet["code"]:
                 return None
 
             return dictRet
+
         except Exception as ex:
-            g_logger.error(ex)
+            await g_aio_logger.error(ex)
             return None
 
     @classmethod
-    def parse_token(cls, szToken):
+    async def parse_token(cls, szToken):
         try:
             jwt_options = {
                 'verify_signature': False,
@@ -68,32 +69,37 @@ class TokenUtils:
             dictToken = jwt.decode(szToken, TokenUtils.JWT_SALT, algorithms=["HS512"], options=jwt_options)
             return dictToken
         except Exception as ex:
-            g_logger.error(ex)
+            await g_aio_logger.error(ex)
             return None
 
     @classmethod
-    def expire_time(cls, szToken):
+    async def expire_time(cls, szToken):
         try:
-            dictToken = cls.parse_token(szToken)
+            dictToken = await cls.parse_token(szToken)
             if dictToken is None:
                 return 0
 
-            r = redis.StrictRedis(connection_pool=ThinkRedis.get_conn_pool_ex())
-
             szKey = "login_tokens:{}".format(dictToken["login_user_key"])
-            return r.ttl(szKey)
+            with await (await ThinkAioRedisPool.get_conn_pool_ex()) as conn:
+                szVal = await conn.execute('ttl', szKey)
+                return int(szVal)
 
         except Exception as ex:
-            g_logger.error(ex)
+            await g_aio_logger.error(ex)
             return 0
 
+async def main():
+    szToken = await TokenUtils.auth_token("1234", "5678")
+    await g_aio_logger.info(szToken)
 
-# szToken = TokenUtils.auth_token("1234", "5678")
-# g_logger.info(szToken)
-#
-# dictRet = TokenUtils.get_info(szToken)
-# g_logger.info(obj2json(dictRet))
-#
-# g_logger.info(obj2json(TokenUtils.parse_token(szToken)))
-# g_logger.info(TokenUtils.expire_time(szToken))
+    dictRet = await TokenUtils.get_info(szToken)
+    await g_aio_logger.info(obj2json(dictRet))
 
+    await g_aio_logger.info(obj2json(await TokenUtils.parse_token(szToken)))
+    await g_aio_logger.info(await TokenUtils.expire_time(szToken))
+
+    # await g_aio_logger.shutdown()
+
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
