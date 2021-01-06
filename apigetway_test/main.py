@@ -30,7 +30,7 @@ class MainHandler(BaseHandler):
 
 class AuthHandler(JWTHandler):
 
-    async def post(self):
+    async def post(self, szPath):
         dictToken = await self.create_token(self.get_argument("appid"), self.get_argument("secret"))
 
         if dictToken is None:
@@ -38,14 +38,14 @@ class AuthHandler(JWTHandler):
 
         self.write(obj2json(dictToken))
 
-    async def get(self):
-        await self.post()
+    async def get(self, szPath):
+        await self.post(szPath)
 
 async def on_server_started():
     g_logger.info("Server Started!!!")
 
 application = tornado.web.Application(handlers = [
-    (r"/auth/token", AuthHandler)
+    (r"/auth/(.*)", AuthHandler)
     , (r"/(.*)", MainHandler)
 ], cookie_secret="BUEa2ckrQtmBofim3aP6cwr/acg0LEu6mHUxq4O3EY0=", autoreload=False)
 
