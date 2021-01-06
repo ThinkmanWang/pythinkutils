@@ -4,7 +4,7 @@ import jwt
 import datetime
 from jwt import exceptions
 
-JWT_SALT = 'abcdefghijklmnopqrstuvwxyz'
+JWT_SALT = ''
 
 def encode():
     encoded = jwt.encode({'login_user_key': '900bb019-e8a6-4f2e-b806-8bc8081e3ab9'}, JWT_SALT, algorithm="HS512")
